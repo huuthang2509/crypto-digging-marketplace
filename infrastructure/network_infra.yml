@@ -1,0 +1,117 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: ---
+  This template deploys the infrastructure for the Crypto Digging Marketplace
+  application.
+
+Parameters: 
+  ProjectName:
+    Type: String
+    Description: Project name that will be prefixed to resource names
+  VpcCIDR:
+    Description: CIDR block for the VPC
+    Type: String
+  PublicSubnet1CIDR:
+    Description: CIDR block for the Public Subnet 1
+    Type: String
+  PublicSubnet2CIDR:
+    Description: CIDR block for the Public Subnet 2
+    Type: String
+  PrivateSubnet1CIDR:
+    Description: CIDR block for the Private Subnet 1
+    Type: String
+  PrivateSubnet2CIDR:
+    Description: CIDR block for the Private Subnet 2
+    Type: String
+    
+Resources:
+
+  # VPC
+  CryptoVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCIDR
+      EnableDnsSupport: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${ProjectName}-vpc
+
+  # Internet Gateway
+  CryptoIGW:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub ${ProjectName}-igw
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref CryptoVPC
+      InternetGatewayId: !Ref CryptoIGW
+  
+  # Subnet
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select [0, !GetAZs ""]
+      VpcId: !Ref CryptoVPC
+      CidrBlock: !Ref PublicSubnet1CIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${ProjectName}-public-subnet-1
+
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select [1, !GetAZs ""]
+      VpcId: !Ref CryptoVPC
+      CidrBlock: !Ref PublicSubnet2CIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${ProjectName}-public-subnet-2
+
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select [0, !GetAZs ""]
+      VpcId: !Ref CryptoVPC
+      CidrBlock: !Ref PrivateSubnet1CIDR
+      Tags:
+        - Key: Name
+          Value: !Sub ${ProjectName}-private-subnet-1
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select [1, !GetAZs ""]
+      VpcId: !Ref CryptoVPC
+      CidrBlock: !Ref PrivateSubnet2CIDR
+      Tags:
+        - Key: Name
+          Value: !Sub ${ProjectName}-private-subnet-2
+
+  # Nat Gateway
+  NatEIP1:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  NatEIP2:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  NatGateway1:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatEIP1.AllocationId
+      SubnetId: !Ref PublicSubnet1
+  
+  NatGateway2:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatEIP2.AllocationId
+      SubnetId: !Ref PublicSubnet2
+
+Outputs:
