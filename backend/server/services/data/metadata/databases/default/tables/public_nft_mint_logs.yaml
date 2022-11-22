@@ -1,0 +1,3 @@
+table:
+  name: nft_mint_logs
+  schema: public

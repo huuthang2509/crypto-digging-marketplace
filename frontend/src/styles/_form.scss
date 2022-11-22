@@ -1,0 +1,84 @@
+input {
+	width: 100%;
+	height: 30px;
+	padding: 20px;
+	outline: none;
+	border: 0;
+	border-radius: 5px;
+	background-color: $secondary-color;
+	color: $text-color;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+input.minmax-input {
+	background: rgba($color: $primary-color, $alpha: 0.5);
+}
+
+select {
+	height: 40px;
+	padding: 0 15px;
+	background: rgba($color: $primary-color, $alpha: 0.5);
+	color: $text-color;
+	cursor: pointer;
+	&:focus {
+		outline: none;
+	}
+}
+select {
+	width: 100%;
+	height: 40px;
+	padding: 0 15px;
+	background: rgba($color: $primary-color, $alpha: 0.5);
+	color: $text-color;
+	background-image:
+		linear-gradient(45deg, transparent 50%, gray 50%),
+		linear-gradient(135deg, gray 50%, transparent 50%),
+		linear-gradient(to right, #ccc, #ccc);
+	background-position:
+		calc(100% - 17px) calc(1em + 3px),
+		calc(100% - 13px) calc(1em + 3px),
+		calc(100% - 2.5em) 8px;
+	background-size:
+		5px 5px,
+		5px 5px,
+		1px 1.5em;
+	background-repeat: no-repeat;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	font-family: unset;
+	cursor: pointer;
+
+	&:focus {
+		outline: none;
+	}
+}
+
+.form-group {
+	margin-bottom: 20px;
+	label {
+		margin-bottom: 10px;
+		display: block;
+		font-size: 14px;
+	}
+}
+
+.form-error {
+	font-size: 13px;
+	color: #fb5454;
+	font-style: italic;
+	&::before {
+		content: "* ";
+	}
+}

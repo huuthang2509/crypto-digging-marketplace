@@ -1,0 +1,11 @@
+.section-wrapper {
+  &__title {
+    color: $title-color;
+  }
+  &__body {
+    margin-top: 40px;
+    @media (max-width: $SM_UP) {
+      margin-top: 20px;
+    }
+  }
+}

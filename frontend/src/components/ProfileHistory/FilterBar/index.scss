@@ -1,0 +1,20 @@
+.user-history-filter {
+	background-color: $secondary-color;
+	border-radius: 5px;
+	&__section {
+		padding: 20px;
+		&:not(:last-child) {
+			border-bottom: 1px solid #4d4d9c;
+		}
+		&-title {
+			margin-bottom: 10px;
+		}
+	}
+	&__top {
+		@include flex(row, center, space-between);
+	}
+	&__clear-all {
+		color: #27b1ff;
+		cursor: pointer;
+	}
+}

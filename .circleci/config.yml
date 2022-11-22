@@ -1,0 +1,136 @@
+version: 2.1
+
+orbs:
+  slack: circleci/slack@4.10.1
+
+executors:
+  docker-nodejs:
+    docker:
+      - image: circleci/node:12.16.1
+  docker-python:
+    docker:
+      - image: circleci/python:3.8.2
+  docker-aws-cli:
+    docker:
+      - image: amazon/aws-cli
+  docker:
+
+jobs:
+  build_frontend:
+    executor: docker-nodejs
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: Build frontend
+          command: |
+            cd frontend
+            npm install
+            npm run build
+      - save_cache:
+          paths: [frontend/node_modules]
+          key: frontend-build
+  
+  build_backend:
+    executor: docker-nodejs
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [backend-build]
+      - run:
+          name: Build backend
+          command: |
+            cd backend
+            npm install
+            npm run build
+      - save_cache:
+          paths: [backend/node_modules]
+          key: backend-build
+
+  test_frontend:
+    executor: docker-nodejs
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: Test frontend
+          command: |
+            cd frontend
+            npm run test
+
+  test_backend:
+    executor: docker-nodejs
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [backend-build]
+      - run:
+          name: Test backend
+          command: |
+            cd backend
+            npm run test
+
+  containeried_backend:
+  
+  
+
+  deploy_infrastructure:
+    executor: docker-aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Deploy infrastructure
+          command: |
+            cd infrastructure
+            aws cloudformation deploy \
+            --template-file infrastructure.yml \
+            --stack-name crypto-digging-marketplace \
+            --capabilities CAPABILITY_IAM
+
+  configure_infrastructure:
+    executor: docker-python
+    steps:
+      - checkout
+      - run:
+          name: Configure infrastructure
+          command: |
+            pip install ansible
+  
+  backup_db:
+    executor: docker-python
+    steps:
+      - checkout
+      - run:
+          name: Backup database
+          command: |
+            cd infrastructure
+            python3 backup_db.py
+
+  deploy_frontend:
+
+  deploy_backend:
+
+  smoke_test: #health check?
+
+workflows:
+  deploy:
+    jobs:
+      - build_frontend
+      - build_backend
+      - test_frontend:
+          requires: [build_frontend]
+      - test_backend:
+          requires: [build_backend]
+      - deploy_infrastructure:
+          requires: [test_frontend, test_backend]
+          filters:
+            branches:
+              only: master
+      - configure_infrastructure:
+          requires: [deploy_infrastructure]
+      - backup_db
+      - deploy_frontend
+      - deploy_backend
+      - smoke_test

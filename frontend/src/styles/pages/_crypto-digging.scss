@@ -1,0 +1,92 @@
+#game-page {
+  padding-top: 100px;
+  .top {
+    margin: 0 auto 90px;
+    width: calc(min(90%, 833px));
+    text-align: center;
+    &__title {
+      margin-bottom: 20px;
+      color: $title-color;
+    }
+  }
+
+  .game-play {
+    position: relative;
+    margin: 0 100px;
+    padding: 70px 60px;
+    background-color: $secondary-color;
+    border-radius: 6px;
+    box-shadow: 0 3px 8px 0 rgba($color: $main-shadow-color, $alpha: 0.25);
+
+    @media (max-width: $MD_DOWN) {
+      margin: 0 auto;
+      width: 90%;
+    }
+    @media (max-width: $SM_DOWN) {
+      padding: 70px 20px;
+    }
+
+    &__top-image {
+      position: absolute;
+      top: calc(0px - 50px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+    &__title {
+      margin-bottom: 30px;
+      color: $title-color;
+      text-align: center;
+    }
+
+    &__item {
+      @include flex(row, flex-start, space-between);
+      @media (max-width: $SM_DOWN) {
+        @include flex(column, center);
+      }
+      &-img {
+        position: relative;
+        width: 150px;
+        height: 257px;
+        margin-right: 45px;
+        @media (max-width: $SM_DOWN) {
+          margin-right: 0;
+        }
+      }
+      &-text {
+        flex: 1;
+        @media (max-width: $SM_DOWN) {
+          text-align: center;
+        }
+        p:first-child {
+          margin-bottom: 10px;
+          font-weight: 600;
+          text-transform: capitalize;
+        }
+      }
+
+      &--reverse {
+        @include flex(row-reverse, flex-start, space-between);
+        @media (max-width: $SM_DOWN) {
+          @include flex(column, center);
+        }
+        .game-play__item-img {
+          margin-left: 45px;
+          margin-right: 0;
+          @media (max-width: $SM_DOWN) {
+            margin-left: 0;
+          }
+        }
+      }
+
+      &:not(:last-child) {
+        padding-bottom: 50px;
+        margin-bottom: 50px;
+        border-bottom: 1px solid $divider-color;
+      }
+    }
+  }
+}

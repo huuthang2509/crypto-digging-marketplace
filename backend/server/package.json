@@ -1,0 +1,11 @@
+{
+  "name": "crypto-digging",
+  "version": "1.0.0",
+  "description": "Crypto Digging",
+  "main": "index.js",
+  "author": "PA_NQT (R2ws Team)",
+  "license": "ISC",
+  "dependencies": {
+    "crypto": "^1.0.1"
+  }
+}

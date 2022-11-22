@@ -1,0 +1,6 @@
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
+-- INSERT INTO "boxes_types"("name","CDGPrice","img","commonRatio","rareRatio","epicRatio","legendRatio","boxType") VALUES ('Common Box',10,'/server/resource/box_common.png',80,14,5,1,'common');
+-- INSERT INTO "boxes_types"("name","CDGPrice","img","commonRatio","rareRatio","epicRatio","legendRatio","boxType") VALUES ('Rare Box',50,'/server/resource/box_rare.png',80,14,5,1,'rare');
+-- INSERT INTO "boxes_types"("name","CDGPrice","img","commonRatio","rareRatio","epicRatio","legendRatio","boxType") VALUES ('Epic Box',100,'/server/resource/box_epic.png',80,14,5,1,'epic');
+-- INSERT INTO "boxes_types"("name","CDGPrice","img","commonRatio","rareRatio","epicRatio","legendRatio","boxType") VALUES ('Legend Box',500,'/server/resource/box_legend.png',80,14,5,1,'legend');

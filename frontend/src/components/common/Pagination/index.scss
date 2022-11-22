@@ -1,0 +1,29 @@
+.custom-pagination {
+	@include flex(row, center, center);
+	&__input-div{
+		margin: 0 10px;
+		@include flex(row, center);
+		input {
+			margin-right: 10px;
+			padding: 0 10px;
+			width: 60px;
+			text-align: center;
+		}
+		span {
+			font-weight: 300;
+			font-size: 15px;
+		}
+	}
+	button {
+		height: 100%;
+		font-size: 25px;
+		line-height: 25px;
+		font-weight: 500;
+		color: white;
+		background-color: #613ff8;
+		transition: all 0.4s ease;
+		&:hover {
+			background-color: #795CF5;
+		}
+	}
+}

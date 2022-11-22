@@ -1,0 +1,89 @@
+#marketplace-search-results {
+	.loading, .message {
+		margin-top: 50px;
+	}
+	.nfts {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		grid-template-rows: auto;
+		grid-gap: 30px;
+	
+		@media (max-width: $LG_UP) {
+			grid-template-columns: repeat(3, 1fr);
+		}
+		@media (max-width: $MD_UP) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+		@media (max-width: $SM_UP) {
+			grid-template-columns: 1fr;
+		}
+	}
+	.nft {
+		@include flex(column, center);
+		position: relative;
+		background-color: $secondary-color;
+		border-radius: 5px;
+		width: 100%;
+		transition: all 0.4s ease;
+		cursor: pointer;
+		&:hover {
+		  transform: scale(1.08);
+		}
+	
+		&__owner {
+			position: absolute;
+			top: -10px;
+			right: 10px;
+		}
+		&__image {
+		  position: relative;
+		  width: 100%;
+		  aspect-ratio: 4/3;
+		}
+		&__info {
+		  width: 100%;
+		  padding: 10px 20px;
+		}
+		&__title {
+			color: $title-color;
+			margin-bottom: 20px;
+			margin-top: 10px;
+			text-align: center;
+			font-size: 22px;
+			font-weight: bold;
+		}
+		&__type {
+			margin-bottom: 10px;
+			@include flex(row, center, space-between);
+			gap: 10px;
+			text-transform: capitalize;
+			font-size: 14px;
+			> span {
+				color: #ededed;
+			}
+			div {
+				@include flex(row, center);
+				gap: 5px;
+			}
+		}
+		&__price {
+			@include flex(row, center, space-between);
+		
+			> span {
+				color: #ededed;
+				font-size: 14px;
+			}
+			&-right {
+				@include flex(row, center);
+				span {
+					margin-left: 10px;
+					font-size: 18px;
+					font-weight: 600;
+				}
+			}
+		}
+	}
+	.pagination {
+		margin-top: 40px;
+	}
+}

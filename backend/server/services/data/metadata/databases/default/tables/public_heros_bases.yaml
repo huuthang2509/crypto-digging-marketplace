@@ -1,0 +1,3 @@
+table:
+  name: heros_bases
+  schema: public

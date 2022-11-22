@@ -1,0 +1,7 @@
+.empty-message {
+	@include flex(column, center);
+	&__title {
+		margin-top: 20px;
+		text-align: center;
+	}
+}

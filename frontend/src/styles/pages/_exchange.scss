@@ -1,0 +1,36 @@
+#exchange-page {
+	.categories {
+		@include flex(row, center, center);
+		border-bottom: 1px solid $divider-color;
+	}
+	.category {
+		padding: 0 20px 10px;
+		cursor: pointer;
+		&--active {
+			border-bottom: 3px solid $button-primary-color;
+			font-weight: bold;
+		}
+	}
+	.content {
+		margin: auto;
+		margin-top: 50px;
+		width: calc(min(500px, 100%));
+		@include flex(column, center);
+
+		.images {
+			width: 100%;
+			@include flex(row, center, space-between);
+			gap: 50px;
+		}
+
+		form {
+			margin-top: 50px;
+			width: 100%;
+
+			button[type="submit"] {
+				margin: 0 auto;
+				padding: 10px 30px;
+			}
+		}
+	}
+}

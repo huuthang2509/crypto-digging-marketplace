@@ -1,0 +1,4 @@
+INSERT INTO "boxes_types"("name","CDGPrice","img","commonRatio","rareRatio","epicRatio","legendRatio","boxType") VALUES ('Common Box',10,'/server/resource/box_common.png',80,16,3,1,'common');
+INSERT INTO "boxes_types"("name","CDGPrice","img","commonRatio","rareRatio","epicRatio","legendRatio","boxType") VALUES ('Rare Box',50,'/server/resource/box_rare.png',50,40,8,2,'rare');
+INSERT INTO "boxes_types"("name","CDGPrice","img","commonRatio","rareRatio","epicRatio","legendRatio","boxType") VALUES ('Epic Box',100,'/server/resource/box_epic.png',30,45,20,5,'epic');
+INSERT INTO "boxes_types"("name","CDGPrice","img","commonRatio","rareRatio","epicRatio","legendRatio","boxType") VALUES ('Legend Box',500,'/server/resource/box_legend.png',80,14,5,1,'legend');

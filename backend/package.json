@@ -1,0 +1,21 @@
+{
+  "name": "crypto-digging-marketplace",
+  "author": "r2ws-team",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com:nguyen-quoc-thai/crypto-digging-marketplace.git"
+  },
+  "homepage": "https://gitlab.com/nguyen-quoc-thai/crypto-digging-marketplace.git#readme",
+  "dependencies": {
+    "@nomiclabs/hardhat-waffle": "^2.0.3",
+    "@openzeppelin/contracts": "^4.5.0",
+    "dotenv": "^16.0.0"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.5",
+    "chai": "^4.3.6",
+    "ethers": "^5.6.0",
+    "hardhat": "^2.9.1"
+  }
+}

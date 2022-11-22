@@ -1,0 +1,5 @@
+.loading-btn {
+	padding: 0 30px;
+	@include flex(row, center, center);
+	gap: 30px;
+}

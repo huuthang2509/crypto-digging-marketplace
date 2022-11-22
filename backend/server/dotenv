@@ -1,0 +1,40 @@
+# Account
+ADDRESS=
+PRIVATE_KEY=
+
+# Infura
+INFURA_URL=https://ropsten.infura.io/v3/a886b260d10241ef920314433e615d7f
+
+# Hasura
+ROOT_DOMAIN=crypto-digging.r2ws
+DATA_DOMAIN=data.crypto-digging.r2ws
+SCHEME=http
+DATA_ADMIN_SECRET=hasura
+HASURA_GRAPHQL_ADMIN_SECRET=hasura
+
+# Postgres
+POSTGRES_HOST=dg-postgres
+POSTGRES_PORT=5432
+POSTGRES_USER=postgres
+POSTGRES_DB=postgres
+POSTGRES_PASSWORD=postgres
+
+# Logging
+SERVICE_LOG=
+LEVEL_LOG_GOOGLE=
+LEVEL_LOG=debug
+NODE_ENV=local
+
+# Solana
+SOL_NETWORK=devnet
+SOL_PRICE_URL=https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd
+SOL_PRIVATE_KEYPAIR=181,115,63,47,201,158,235,219,147,56,95,15,179,70,217,69,246,189,131,205,239,163,79,113,112,100,26,15,28,76,210,53,219,183,8,164,232,38,184,237,66,241,37,123,125,7,204,54,155,0,90,170,153,239,77,79,74,31,24,162,171,220,196,196
+CDG_TOKEN_ID=7ctmggF48CzBq6L6JvmcM5KrjfRm4zMir1ycVoFfkd31
+
+# Jwt
+JWT_SECRET=complexsecrethere
+JWT_ACCESS_EXPIRE=1
+JWT_REFRESH_EXPIRE=7
+
+# Signature
+SIGNATURE_EXPIRED=5

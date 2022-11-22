@@ -1,0 +1,41 @@
+.button {
+  font-weight: 600;
+  font-size: 16px;
+  height: 50px;
+  border-radius: 5px;
+
+  &--primary {
+    color: $text-color;
+    background-color: $button-primary-color;
+  }
+
+  &--secondary {
+    color: $text-color;
+    background-color: $button-secondary-color;
+    transition: background-color 0.3s ease;
+    &:hover {
+      background-color: $button-secondary-hover-color;
+    }
+  }
+
+  &--danger {
+    color: $text-color;
+    background-color: #e83a3a;
+  }
+
+  &--disabled {
+    color: $text-color;
+    background-color: #A19EAD;
+    &:hover {
+      background-color: #A19EAD !important;
+    }
+  }
+}
+
+.wallet-adapter-button:not([disabled]):hover {
+  background-color: $secondary-color;
+}
+.wallet-adapter-button-trigger {
+  background-color: $button-primary-color;
+  transition: background-color 0.2s ease;
+}

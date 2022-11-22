@@ -1,0 +1,8 @@
+#user-history-page {
+	.page-wrapper {
+		padding: 50px;
+		display: grid;
+		grid-template-columns: 0.8fr 3fr;
+		grid-column-gap: 30px;
+	}
+}

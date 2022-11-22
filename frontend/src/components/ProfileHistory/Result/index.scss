@@ -1,0 +1,43 @@
+#user-history-search-results {
+	.loading, .message {
+		margin-top: 50px;
+	}
+	.user-history__wrapper {
+		border-radius: 10px;
+		overflow: hidden;
+		table {
+			width: 100%;
+			text-align: left;
+
+			thead {
+				background-color: #3a238e;
+				text-transform: uppercase;
+			}
+			tbody {
+				background-color: rgba($color: $secondary-color, $alpha: 0.7);
+				tr {
+					border-top: 1px solid $divider-color;
+				}
+			}
+
+			.name {
+				@include flex(row, center);
+				gap: 10px;
+				color: $title-color;
+				font-weight: 600;
+			}
+			.price {
+				margin-bottom: 10px;
+				@include flex(row, center);
+				font-weight: 600;
+				gap: 10px;
+			}
+		}
+	}
+	.pagination {
+		padding: 16px;
+		@include flex(row, center, flex-end);
+		border-top: 1px solid $divider-color;
+		background-color: rgba($color: $secondary-color, $alpha: 0.7);
+	}
+}

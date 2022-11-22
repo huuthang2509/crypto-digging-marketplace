@@ -1,0 +1,54 @@
+#wallet-page {
+  .boxes {
+    @include flex(row);
+    @media (max-width: $SM_UP) {
+      @include flex(column);
+    }
+  }
+  .box {
+    @include flex(column, center);
+    position: relative;
+    width: calc(min(300px, 100%));
+    margin-right: 50px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: $secondary-color;
+    @media (max-width: $SM_UP) {
+      width: 100%;
+      margin-right: 0;
+      &:not(:last-child) {
+        margin-bottom: 20px;
+      }
+    }
+    &__top {
+      width: 100%;
+      margin-bottom: 30px;
+    }
+    &__name {
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+    &__game-balance {
+      font-weight: 700;
+      font-size: 20px;
+      color: #43cb37;
+    }
+    &__icon {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+  }
+
+  .button {
+    &__deposit {
+      padding: 7px 25px;
+      border-radius: 5px;
+    }
+
+    &__claim {
+      padding: 7px 25px;
+      border-radius: 5px;
+    }
+  }
+}

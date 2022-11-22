@@ -1,0 +1,336 @@
+.message-popup {
+	&__title {
+		color: $title-color;
+	}
+	&__title, &__desc {
+		text-align: center;
+	}
+	&__button {
+		width: 70%;
+		display: block;
+		margin: auto;
+		margin-top: 30px;
+		border-radius: 10px;
+	}
+}
+
+.error-popup {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.success-popup {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	&__checkmark-wrapper {
+		.checkmark {
+			width: 56px;
+			height: 56px;
+			border-radius: 50%;
+			display: block;
+			stroke-width: 2;
+			stroke: #fff;
+			stroke-miterlimit: 10;
+			margin: 10% auto;
+			box-shadow: inset 0px 0px 0px #3fc633;
+			animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+
+			&__circle {
+				stroke-dasharray: 166;
+				stroke-dashoffset: 166;
+				stroke-width: 2;
+				stroke-miterlimit: 10;
+				stroke: #3fc633;
+				fill: none;
+				animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards
+			}
+
+			&__check {
+				transform-origin: 50% 50%;
+				stroke-dasharray: 48;
+				stroke-dashoffset: 48;
+				animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards
+			}
+			
+			@keyframes stroke{
+				100%{stroke-dashoffset: 0}
+			}
+			@keyframes scale{
+				0%, 100% {transform: none}
+				50%{transform: scale3d(1.1, 1.1, 1)}
+			}
+			@keyframes fill{
+				100%{box-shadow: inset 0px 0px 0px 30px #3fc633}
+			}
+		}
+	}
+
+	&__title {
+		color: #3580ef;
+		text-transform: uppercase;
+	}
+}
+
+.box-checkout-popup {
+	.title {
+		text-transform: uppercase;
+		text-align: center;
+		color: $title-color;
+	}
+	.row-info {
+		@include flex(row, center, space-between);
+		margin-top: 10px;
+		span:first-child {
+			font-size: 14px;
+			color: $main-shadow-color;
+		}
+	}
+	hr {
+		margin: 20px 0;
+	}
+	.price {
+		border-radius: 3px;
+		padding: 10px;
+		background-color: $secondary-color;
+		span:last-child {
+			font-weight: 600;
+		}
+	}
+	.buttons {
+		margin-top: 30px;
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		grid-column-gap: 20px;
+		@media (max-width: $SM_UP) {
+			grid-row-gap: 10px;
+			grid-template-columns: 1fr;
+		}
+	}
+	.submit-btn {
+		width: 100%;
+		border-radius: 5px;
+		margin: auto;
+	}
+	.cancel-btn {
+		width: 100%;
+		color: $text-color;
+		border-radius: 5px;
+		background-color: $secondary-color;
+	}
+}
+
+.open-box-confirmation-popup {
+	&__title {
+		text-align: center
+	}
+	&__submit-btn {
+		width: fit-content;
+		margin: 0 auto;
+	}
+}
+.open-box-success-popup {
+	@include flex();
+	gap: 50px;
+	@media (max-width: $MD_UP) {
+		@include flex(column);
+		align-items: center;
+	}
+	&__loading {
+		padding: 50px 0;
+		width: 100%;
+		> * {
+			@include flex(column, center, center)
+		}
+	}
+	&__image {
+		position: relative;
+		width: 200px;
+		aspect-ratio: 1 / 1;
+		@media (max-width: $MD_UP) {
+			width: 100px;
+		}
+	}
+	&__info {
+		max-width: 450px;
+		p {
+			margin-bottom: 10px;
+		}
+	}
+	.unlocked {
+		margin-bottom: 20px;
+		@include flex(row, center);
+		font-size: 14px;
+		span {
+			margin-left: 10px;
+		}
+		@media (max-width: $MD_UP) {
+			@include flex(row, center, center)
+		}
+	}
+	.hero {
+		&__name {
+			font-weight: bold;
+			font-size: 30px;
+			color: $title-color;
+			margin: 15px 0;
+			@media (max-width: $MD_UP) {
+				text-align: center;
+			}
+		}
+		&__type {
+			position: relative;
+			text-transform: capitalize;
+			p {
+				margin-left: 15px;
+			}
+			&::after {
+				content: "";
+				position: absolute;
+				top: 0;
+				width: 5px;
+				height: 100%;
+				background-color: $button-secondary-color;
+			}
+		}
+		&__specifications {
+			margin: 30px 0;
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			grid-gap: 20px 10px;
+		}
+		&__specification {
+			@include flex(row, center);
+			gap: 10px;
+			&-number {
+				margin-bottom: 0;
+				font-size: 22px;
+				font-weight: bold;
+			}
+			&-text {
+				margin-bottom: 0;
+				font-size: 13px;
+				text-align: left;
+				color: $main-shadow-color;
+			}
+		}
+	}
+}
+
+.remove-item-popup {
+	&__title {
+		text-align: center;
+	}
+	&__submit-btn {
+		width: fit-content;
+		margin: 0 auto;
+	}
+}
+
+.fill-price-listing {
+	&__title {
+		color: $title-color;
+		text-align: center;
+	}
+	&__submit-btn {
+		display: block;
+		margin: auto;
+		margin-top: 30px;
+	}
+}
+
+.claim-gem-to-cdg {
+	&__title {
+		color: $title-color;
+		text-align: center;
+	}
+	.buttons {
+		margin-top: 30px;
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		grid-column-gap: 20px;
+		@media (max-width: $SM_UP) {
+			grid-row-gap: 10px;
+			grid-template-columns: 1fr;
+		}
+	}
+	.submit-btn {
+		border-radius: 5px;
+		margin: auto;
+	}
+	.cancel-btn {
+		color: $text-color;
+		border-radius: 5px;
+		background-color: $secondary-color;
+	}
+}
+
+.item-inventory-popup {
+	&__image {
+		position: relative;
+		width: 150px;
+		height: 150px;
+		margin: 0 auto;
+	}
+	&__info {
+		.item {
+			&__name {
+				color: $title-color;
+				text-align: center;
+			}
+			&__type {
+				margin-bottom: 20px;
+				@include flex(row, center);
+				gap: 10px;
+			}
+			&__description {
+				font-size: 14px;
+			}
+		}
+		.hero {
+			&__specifications {
+				margin: 30px 0;
+				display: grid;
+				grid-template-columns: repeat(2, 1fr);
+				grid-gap: 20px 10px;
+			}
+			&__specification {
+				@include flex(row, center);
+				gap: 20px;
+				&-number {
+					font-size: 22px;
+					font-weight: bold;
+				}
+				&-text {
+					margin-bottom: 0;
+					font-size: 13px;
+					text-align: left;
+					color: $main-shadow-color;
+				}
+			}
+		}
+		.box {
+			&__specifications {
+				margin: 30px 0;
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				grid-gap: 20px 10px;
+			}
+			&__specification {
+				@include flex(column, center);
+				&-number {
+					font-size: 22px;
+					font-weight: bold;
+				}
+				&-text {
+					margin-bottom: 0;
+					font-size: 13px;
+					text-align: left;
+					color: $main-shadow-color;
+				}
+			}
+		}
+	}
+}

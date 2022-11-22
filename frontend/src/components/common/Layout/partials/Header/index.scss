@@ -1,0 +1,210 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 50px;
+  height: 70px;
+  background-color: #2b2b60;
+  color: $text-color;
+  box-shadow: 0 0.5px 8px rgba($color: $main-shadow-color, $alpha: 0.25);
+  z-index: $z-mid;
+  @media (max-width: $MD_DOWN) {
+    padding: 10px 20px;
+  }
+
+  &__main {
+    @include flex(row, center, space-between);
+    height: 100%;
+  }
+
+  &__menu-hamburger {
+    display: none;
+    cursor: pointer;
+    position: relative;
+    z-index: 99;
+    @media (max-width: $MD_DOWN) {
+      display: block;
+    }
+    &--open {
+      .bar {
+        &-1 {
+          transform: rotate(45deg) translate(4px, 6px);
+        }
+        &-2 {
+          opacity: 0;
+        }
+        &-3 {
+          transform: rotate(-45deg) translate(3px, -6px);
+        }
+      }
+    }
+    .bar {
+      width: 25px;
+      height: 2px;
+      background: $text-color;
+      border-radius: 20px;
+      margin-bottom: 5px;
+      transition: 0.4s;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  &__marketplace {
+    &-left {
+      @include flex(row, center);
+    }
+    &-menu {
+      margin-left: 50px;
+    }
+  }
+
+  &__menu {
+    @include flex(row);
+
+    .menu {
+      &__item {
+        padding: 6px 15px;
+        border-radius: 6px;
+
+        &--active {
+          font-weight: 600;
+          background-color: rgba($color: $primary-color, $alpha: 0.6) ;
+        }
+        &:hover {
+          background-color: rgba($color: $primary-color, $alpha: 0.8) ;
+        }
+
+        &:not(:last-child) {
+          margin-right: 50px;
+        }
+      }
+    }
+
+    @media (max-width: $MD_DOWN) {
+      display: none;
+    }
+  }
+
+  &__connect {
+    @media (max-width: $MD_DOWN) {
+      display: none;
+    }
+  }
+
+  &__mobile-account {
+    display: none;
+    @media (max-width: $MD_DOWN) {
+      display: inline-block;
+    }
+  }
+
+  .user {
+    position: relative;
+
+    &__avatar {
+      @include flex(row);
+      cursor: pointer;
+    }
+    &__menu {
+      display: none;
+      position: absolute;
+      padding: 15px;
+      top: calc(100% + 10px);
+      right: 0;
+      min-width: 230px;
+      max-height: 400px;
+      overflow: auto;
+      background-color: $secondary-color;
+      color: $text-color;
+      border-radius: 5px;
+      box-shadow: 0 1px 6px 0px rgba($color: $main-shadow-color, $alpha: 0.25);
+      &--open {
+        display: block;
+      }
+      &-wallet-address {
+        @include flex(row, center);
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        color: #dedede;
+        user-select: none;
+        border-bottom: 2px solid $divider-color;
+      }
+      &-item {
+        @include flex();
+        cursor: pointer;
+        &:not(:last-child) {
+          margin-bottom: 30px;
+        }
+        a {
+          width: 100%;
+        }
+        .wallet-adapter-button-trigger {
+          padding: 0;
+          background-color: transparent;
+        }
+      }
+      span {
+        margin-left: 15px;
+      }
+    }
+    &__logout {
+      padding-top: 15px;
+      border-top: 2px solid $divider-color;
+    }
+  }
+
+  .side-menu {
+    position: fixed;
+    top: 70px;
+    bottom: 0;
+    left: -100%;
+    width: calc(min(100%, 300px));
+    background-color: $secondary-color;
+    transition: all 0.3s ease;
+    z-index: $z-top;
+
+    &-overlay {
+      position: fixed;
+      top: 70px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: $z-top;
+      background: rgba($color: $secondary-color, $alpha: 0.8);
+      backdrop-filter: blur(10px);
+      &--active {
+        opacity: 0.9;
+        visibility: visible;
+      }
+
+      @media (min-width: $MD_DOWN) {
+        opacity: 0;
+      }
+    }
+
+    &--show {
+      left: 0;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+    @media (min-width: $MD_DOWN) {
+      opacity: 0;
+    }
+
+    &__item {
+      padding: 20px;
+      border-bottom: 1px solid $text-color;
+      &--active {
+        color: $title-color;
+        font-weight: 600;
+      }
+    }
+  }
+}

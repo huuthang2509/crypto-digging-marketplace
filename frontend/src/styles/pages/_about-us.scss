@@ -1,0 +1,83 @@
+#about-us-page {
+  .container {
+    padding: 60px 150px 0;
+  }
+
+  .team {
+    &__members {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-gap: 10px;
+    }
+  }
+  .members__slider {
+    .swiper-wrapper {
+      margin-bottom: 20px;
+    }
+    .swiper-slide {
+      height: auto;
+    }
+    .swiper-scrollbar {
+      background: $secondary-color;
+      @media (max-width: $SM_UP) {
+        display: none;
+      }
+    }
+    .swiper-scrollbar-drag {
+      background: rgba($color: #fff, $alpha: 0.5);
+    }
+  }
+  .member {
+    padding: 20px;
+    background-color: $secondary-color;
+    border-radius: 8px;
+    text-align: center;
+    user-select: none;
+    height: 100%;
+
+    img {
+      border-radius: 50%;
+    }
+    &__name {
+      font-size: 18px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    &__quote {
+      font-style: italic;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+  }
+
+  .contact {
+    margin-top: 70px;
+
+    &__list {
+      @include flex(row);
+      margin-top: 40px;
+      margin-left: -50px;
+      flex-wrap: wrap;
+      @media (max-width: $LAPTOP_DOWN) {
+        margin-left: 0;
+        @include flex(column);
+      }
+    }
+    &__item {
+      margin-left: 50px;
+      @include flex(row, center);
+      padding: 18px 27px;
+      background-color: $secondary-color;
+      border-radius: 10px;
+      &-text {
+        margin-left: 22px;
+      }
+      @media (max-width: $LAPTOP_DOWN) {
+        margin-left: 0;
+        margin-bottom: 10px;
+        padding: 5%;
+        width: 100%;
+      }
+    }
+  }
+}

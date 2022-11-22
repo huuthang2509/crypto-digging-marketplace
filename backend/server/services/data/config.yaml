@@ -1,0 +1,4 @@
+version: 3
+endpoint: http://data.crypto-digging.r2ws
+metadata_directory: metadata
+admin_secret: hasura

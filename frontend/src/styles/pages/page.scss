@@ -1,0 +1,7 @@
+.page-container {
+  padding: 60px 150px 0;
+
+  @media (max-width: $LG_UP) {
+    padding: 5% 10%;
+  }
+}

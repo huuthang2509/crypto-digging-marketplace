@@ -1,0 +1,14 @@
+.app-wrapper {
+  &__body {
+    max-width: 1920px;
+    margin: 0 auto;
+    margin-top: 70px;
+    padding-bottom: 80px;
+    min-height: calc(100vh - 70px - 50px);
+    background-color: #29294a;
+    background-image: url('./../../../../../public/images/background.jpg');
+    background-position: center;
+    background-size: cover;
+    color: $text-color;
+  }
+}

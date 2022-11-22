@@ -1,0 +1,1 @@
+insert into "public"."test" values(default);

@@ -1,0 +1,20 @@
+.purchase-button-controller {
+	.quatity-control {
+		@include flex();
+		gap: 10px;
+
+		input {
+			height: 10px;
+			padding: 15px;
+			font-weight: bold;
+			text-align: center;
+		}
+
+		button {
+			padding: 0 15px;
+			color: $text-color;
+			border-radius: 3px;
+			background-color: $button-primary-color;
+		}
+	}
+}
