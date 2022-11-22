@@ -6,84 +6,67 @@ orbs:
 executors:
   docker-nodejs:
     docker:
-      - image: circleci/node:12.16.1
+      - image: circleci/node:16.13.0
   docker-python:
     docker:
       - image: circleci/python:3.8.2
   docker-aws-cli:
     docker:
       - image: amazon/aws-cli
-  docker:
+  docker-base:
+    docker:
+      - image: cimg/base:2022.11-20.04
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_ACCESS_TOKEN
 
 jobs:
-  build_frontend:
-    executor: docker-nodejs
+
+  build-push-fe-image:
+    executor: docker-base
     steps:
       - checkout
-      - restore_cache:
-          keys: [frontend-build]
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
-          name: Build frontend
+          name: Build frontend image
           command: |
             cd frontend
-            npm install
-            npm run build
-      - save_cache:
-          paths: [frontend/node_modules]
-          key: frontend-build
-  
-  build_backend:
-    executor: docker-nodejs
+            TAG=${CIRCLECI_WORKFLOW_ID:0:3}
+            docker build . -f Dockerfile -t=huuthang2509/cryto-digging-fe:$TAG
+      - run:
+          name: Push to Docker Hub
+          command: |
+            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN
+            docker push huuthang2509/cryto-digging-fe:$TAG
+
+  build-push-be-image:
+    executor: docker-base
     steps:
       - checkout
-      - restore_cache:
-          keys: [backend-build]
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
-          name: Build backend
+          name: Build backend image
           command: |
             cd backend
-            npm install
-            npm run build
-      - save_cache:
-          paths: [backend/node_modules]
-          key: backend-build
-
-  test_frontend:
-    executor: docker-nodejs
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [frontend-build]
+            TAG=${CIRCLECI_WORKFLOW_ID:0:3}
+            docker build . -f Dockerfile -t=huuthang2509/cryto-digging-be:$TAG
       - run:
-          name: Test frontend
+          name: Push to Docker Hub
           command: |
-            cd frontend
-            npm run test
+            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN
+            docker push huuthang2509/cryto-digging-be:$TAG
 
-  test_backend:
-    executor: docker-nodejs
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [backend-build]
-      - run:
-          name: Test backend
-          command: |
-            cd backend
-            npm run test
 
-  containeried_backend:
-  
-  
-
-  deploy_infrastructure:
+  deploy-infrastructure:
     executor: docker-aws-cli
     steps:
       - checkout
       - run:
           name: Deploy infrastructure
           command: |
-            cd infrastructure
+            cd app_infra
             aws cloudformation deploy \
             --template-file infrastructure.yml \
             --stack-name crypto-digging-marketplace \
