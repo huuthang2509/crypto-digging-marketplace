@@ -66,10 +66,10 @@ jobs:
       - run:
           name: Deploy infrastructure
           command: |
-            cd app_infra
+            cd infrastructure
             aws cloudformation deploy \
-            --template-file infrastructure.yml \
-            --stack-name crypto-digging-marketplace \
+            --template-file network_infra.yml \
+            --stack-name crypto-network \
             --capabilities CAPABILITY_IAM
 
   configure_infrastructure:
