@@ -111,9 +111,9 @@ Resources:
     Properties:
       AllocationId: !GetAtt NatEIP1.AllocationId
       SubnetId: !Ref PublicSubnet1
-    Tags:
-      - Key: Name
-        Value: !Sub ${ProjectName}-nat-gateway-1
+      Tags:
+        - Key: Name
+          Value: !Sub ${ProjectName}-nat-gateway-1
   
   NatGateway2:
     Type: AWS::EC2::NatGateway
@@ -124,9 +124,9 @@ Resources:
     Properties:
       AllocationId: !GetAtt NatEIP2.AllocationId
       SubnetId: !Ref PublicSubnet2
-    Tags:
-      - Key: Name
-        Value: !Sub ${ProjectName}-nat-gateway-2
+      Tags:
+        - Key: Name
+          Value: !Sub ${ProjectName}-nat-gateway-2
 
   # Route Table
   PublicRouteTable:
