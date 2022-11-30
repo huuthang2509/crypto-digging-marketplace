@@ -250,3 +250,9 @@ Outputs:
     Value: !Ref PrivateSubnet2
     Export:
       Name: !Sub ${AWS::StackName}-PrivateSubnet2Id
+
+  BastionHostSG:
+    Description: Bastion Host Security Group
+    Value: !Ref BastionHostSG
+    Export:
+      Name: !Sub ${AWS::StackName}-BastionHostSG
