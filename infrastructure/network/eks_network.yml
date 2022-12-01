@@ -126,3 +126,9 @@ Outputs:
     Value: !Ref ControlPlaneSecurityGroup
     Export:
       Name: !Sub ${AWS::StackName}-ControlPlaneSecurityGroup
+
+  NodeSecurityGroup:
+    Description: EKS Security Group for the worker nodes
+    Value: !Ref NodeSecurityGroup
+    Export:
+      Name: !Sub ${AWS::StackName}-NodeSecurityGroup
