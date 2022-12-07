@@ -20,6 +20,10 @@ executors:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
 
+commands:
+  destroy-infra:
+    
+
 jobs:
 
   build-push-fe-image:
@@ -58,19 +62,41 @@ jobs:
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN
             docker push huuthang2509/cryto-digging-be:$TAG
 
-
   deploy-infrastructure:
     executor: docker-aws-cli
     steps:
       - checkout
       - run:
-          name: Deploy infrastructure
+          name: Deploy VPC infrastructure
           command: |
             cd infrastructure
             aws cloudformation deploy \
-            --template-file network_infra.yml \
-            --stack-name crypto-network \
-            --capabilities CAPABILITY_IAM
+              --template-file ./network/base_network.yml \
+              --stack-name cryto-digging-network \
+              --parameter-overrides file://parameters/base_network_param.conf \
+              --capabilities CAPABILITY_IAM
+      - run:
+          name: Deploy EKS infrastructure
+          command: |
+            cd infrastructure
+            aws cloudformation deploy \
+              --template-file ./network/eks_network.yml \
+              --stack-name cryto-digging-eks-network \
+              --parameter-overrides file://parameters/eks_network_param.conf \
+              --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
+            aws cloudformation wait stack-create-complete --stack-name "cryto-digging-eks-network"
+            aws cloudformation deploy \
+              --template-file ./eks_cluster.yml \
+              --stack-name cryto-digging-eks-cluster \
+              --parameter-overrides file://parameters/eks_cluster_param.conf \
+              --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
+            aws cloudformation wait stack-create-complete --stack-name "cryto-digging-eks-cluster"
+            scp -i bastion-host.pem cryto-digging-nodegroup.pem ubuntu@54.84.69.43:/home/ubuntu/
+            aws cloudformation deploy \
+              --template-file ./eks_nodegroup.yml \
+              --stack-name cryto-digging-eks-nodegroup \
+              --parameter-overrides file://parameters/eks_nodegroup_param.conf \
+              --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
 
   configure_infrastructure:
     executor: docker-python
