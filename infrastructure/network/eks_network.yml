@@ -97,7 +97,7 @@ Resources:
       ToPort: 443
       FromPort: 443
 
-  # Allow Bastion Host access to EKS for debugging
+  # Allow Bastion Host access to EKS NodeGroup for debugging
   BastionHostSecurityGroupIngressToNodeGroup:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
