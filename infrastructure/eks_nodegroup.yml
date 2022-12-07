@@ -53,7 +53,7 @@ Resources:
   NodeGroupTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      Name: !Sub ${ClusterName}-nodegroup-targetgroup
+      Name: !Sub ${ClusterName}-NG-TG
       Port: 80
       Protocol: HTTP
       VpcId: 
@@ -72,7 +72,7 @@ Resources:
     Properties:
       LaunchTemplateName: !Sub ${ClusterName}-nodegroup-launchtemplate
       LaunchTemplateData:
-        ImageId: ami-0149b2da6ceec4bb0
+        ImageId: ami-0c9424a408e18bcc9
         InstanceType: t2.micro
         KeyName: !Ref NodeGroupKeyName
         SecurityGroupIds:
@@ -81,8 +81,7 @@ Resources:
           Fn::Base64: !Sub |
             #!/bin/bash
             set -o xtrace
-            /etc/eks/bootstrap.sh ${ClusterName} \
-                --use-max-pods true
+            /etc/eks/bootstrap.sh ${ClusterName}
             /opt/aws/bin/cfn-signal --exit-code $? \
                 --stack ${AWS::StackName} \
                 --resource NodeGroup \
@@ -127,3 +126,13 @@ Resources:
         - Key: !Sub kubernetes.io/cluster/${ClusterName}
           PropagateAtLaunch: "true"
           Value: owned
+
+Outputs:
+
+  NodeInstanceRole:
+    Description: The node instance role
+    Value: !GetAtt NodeInstanceRole.Arn
+
+  NodeAutoScalingGroup:
+    Description: The autoscaling group
+    Value: !Ref NodeGroup
