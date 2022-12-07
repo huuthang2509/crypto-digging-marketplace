@@ -6,16 +6,19 @@ Parameters:
   BaseNetworkStackName:
     Type: String
     Description: Name of the network stack
+  EKSNetworkStackName:
+    Type: String
+    Description: Name of the EKS network stack
   EKSIAMRoleName:
     Type: String
     Description: Name of the IAM role for EKS
-  EKSClusterName:
+  ClusterName:
     Type: String
     Description: Name of the EKS cluster
   EC2AMI:
     Type: AWS::EC2::Image::Id
     Description: AMI ID for the EC2 instance
-  BastionKey:
+  BastionKeyName:
     Type: AWS::EC2::KeyPair::KeyName
     Description: Name of the key pair for the bastion host
 
@@ -41,11 +44,11 @@ Resources:
   EKSCluster:
     Type: AWS::EKS::Cluster
     Properties:
-      Name: !Ref EKSClusterName
+      Name: !Ref ClusterName
       RoleArn: !GetAtt EKSIAMRole.Arn
       ResourcesVpcConfig:
         SecurityGroupIds:
-        - Fn::ImportValue: !Sub ${BaseNetworkStackName}-ControlPlaneSecurityGroup
+        - Fn::ImportValue: !Sub ${EKSNetworkStackName}-ControlPlaneSecurityGroup
         SubnetIds:
         - Fn::ImportValue: !Sub ${BaseNetworkStackName}-PrivateSubnet1Id
         - Fn::ImportValue: !Sub ${BaseNetworkStackName}-PrivateSubnet2Id
@@ -56,11 +59,11 @@ Resources:
     Properties:
       ImageId: !Ref EC2AMI
       InstanceType: t2.micro
-      KeyName: !Ref BastionKey
+      KeyName: !Ref BastionKeyName
       SecurityGroupIds:
-        - Fn::ImportValue: !Sub ${BaseNetworkStackName}-BastionSG
+        - Fn::ImportValue: !Sub ${BaseNetworkStackName}-BastionHostSG
       SubnetId: 
         Fn::ImportValue: !Sub ${BaseNetworkStackName}-PublicSubnet1Id
       Tags:
         - Key: Name
-          Value: !Sub ${EKSClusterName}-bastion
+          Value: !Sub ${ClusterName}-bastion
