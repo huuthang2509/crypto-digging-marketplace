@@ -67,3 +67,8 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${ClusterName}-bastion
+
+Outputs:
+  BastionHostPublicIP:
+    Description: Public IP address of the bastion host
+    Value: !GetAtt BastionHost.PublicIp
