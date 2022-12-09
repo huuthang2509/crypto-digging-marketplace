@@ -1,0 +1,74 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: ---
+  This template deploys the EKS Cluster (which creates the Kubernetes control plane) for the Crypto Digging Marketplace.
+
+Parameters:
+  BaseNetworkStackName:
+    Type: String
+    Description: Name of the network stack
+  EKSNetworkStackName:
+    Type: String
+    Description: Name of the EKS network stack
+  EKSIAMRoleName:
+    Type: String
+    Description: Name of the IAM role for EKS
+  ClusterName:
+    Type: String
+    Description: Name of the EKS cluster
+  EC2AMI:
+    Type: AWS::EC2::Image::Id
+    Description: AMI ID for the EC2 instance
+  BastionKeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Name of the key pair for the bastion host
+
+Resources: 
+  # EKS role
+  EKSIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - eks.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      RoleName: !Ref EKSIAMRoleName
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+
+  # EKS cluster
+  EKSCluster:
+    Type: AWS::EKS::Cluster
+    Properties:
+      Name: !Ref ClusterName
+      RoleArn: !GetAtt EKSIAMRole.Arn
+      ResourcesVpcConfig:
+        SecurityGroupIds:
+        - Fn::ImportValue: !Sub ${EKSNetworkStackName}-ControlPlaneSecurityGroup
+        SubnetIds:
+        - Fn::ImportValue: !Sub ${BaseNetworkStackName}-PrivateSubnet1Id
+        - Fn::ImportValue: !Sub ${BaseNetworkStackName}-PrivateSubnet2Id
+
+  # Bastion host for debugging
+  BastionHost:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref EC2AMI
+      InstanceType: t2.micro
+      KeyName: !Ref BastionKeyName
+      SecurityGroupIds:
+        - Fn::ImportValue: !Sub ${BaseNetworkStackName}-BastionHostSG
+      SubnetId: 
+        Fn::ImportValue: !Sub ${BaseNetworkStackName}-PublicSubnet1Id
+      Tags:
+        - Key: Name
+          Value: !Sub ${ClusterName}-bastion
+
+Outputs:
+  BastionHostPublicIP:
+    Description: Public IP address of the bastion host
+    Value: !GetAtt BastionHost.PublicIp

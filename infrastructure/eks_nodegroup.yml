@@ -1,0 +1,138 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: ---
+  This template deploys Node Group for EKS Cluster.
+
+Parameters: 
+
+  BaseNetworkStackName:
+    Type: String
+    Description: Name of the network stack
+  ClusterName:
+    Type: String
+    Description: Name of the EKS cluster
+  NodeGroupKeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Name of the key pair for the node group
+  EKSNetworkStackName:
+    Type: String
+    Description: Name of the EKS network stack
+  BootstrapArguments:
+    Type: String
+    Default: ""
+    Description: "Arguments to pass to the bootstrap script. See files/bootstrap.sh in https://github.com/awslabs/amazon-eks-ami"
+  
+
+Resources:
+
+  # EC2 instance role
+  NodeInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+        - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+
+  # Create instance profile to pass IAM role to EC2 instance
+  NodeInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - Ref: NodeInstanceRole
+
+  # Create target group for Load Balancer
+  NodeGroupTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub ${ClusterName}-NG-TG
+      Port: 80
+      Protocol: HTTP
+      VpcId: 
+        Fn::ImportValue: !Sub ${BaseNetworkStackName}-VpcId
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath: /index.html
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
+      TargetType: instance
+
+  # Launch template for node group
+  NodeGroupLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: !Sub ${ClusterName}-nodegroup-launchtemplate
+      LaunchTemplateData:
+        ImageId: ami-0c9424a408e18bcc9
+        InstanceType: t2.micro
+        KeyName: !Ref NodeGroupKeyName
+        SecurityGroupIds:
+          - Fn::ImportValue: !Sub ${EKSNetworkStackName}-NodeSecurityGroup
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash
+            set -o xtrace
+            /etc/eks/bootstrap.sh ${ClusterName}
+            /opt/aws/bin/cfn-signal --exit-code $? \
+                --stack ${AWS::StackName} \
+                --resource NodeGroup \
+                --region ${AWS::Region}
+        IamInstanceProfile:
+          Name: !Ref NodeInstanceProfile
+        # BlockDeviceMappings:
+        #   - DeviceName: /dev/xvda
+        #     Ebs:
+        #       VolumeSize: 20
+        #       VolumeType: gp2
+        #       DeleteOnTermination: true
+        TagSpecifications:
+          - ResourceType: instance
+            Tags:
+              - Key: Name
+                Value: !Sub ${ClusterName}-ASG-node
+              - Key: !Sub kubernetes.io/cluster/${ClusterName}
+                Value: owned
+
+  # Node group for EKS cluster
+  NodeGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      MaxSize: 3
+      DesiredCapacity: 2
+      MinSize: 1
+      HealthCheckGracePeriod: 300
+      # HealthCheckType: ELB
+      LaunchTemplate:
+        LaunchTemplateId: !Ref NodeGroupLaunchTemplate
+        Version: !GetAtt NodeGroupLaunchTemplate.LatestVersionNumber
+      TargetGroupARNs:
+        - !Ref NodeGroupTargetGroup
+      VPCZoneIdentifier:
+        - Fn::ImportValue: !Sub ${BaseNetworkStackName}-PrivateSubnet1Id
+        - Fn::ImportValue: !Sub ${BaseNetworkStackName}-PrivateSubnet2Id
+      Tags:
+        - Key: Name
+          PropagateAtLaunch: "true"
+          Value: !Sub ${ClusterName}-ASG-node
+        - Key: !Sub kubernetes.io/cluster/${ClusterName}
+          PropagateAtLaunch: "true"
+          Value: owned
+
+Outputs:
+
+  NodeInstanceRole:
+    Description: The node instance role
+    Value: !GetAtt NodeInstanceRole.Arn
+
+  NodeAutoScalingGroup:
+    Description: The autoscaling group
+    Value: !Ref NodeGroup

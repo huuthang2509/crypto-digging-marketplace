@@ -1,0 +1,134 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: ---
+  This template deploys Network for EKS Cluster and Node Group.
+
+Parameters: 
+  ClusterName:
+    Type: String
+    Description: Name of the EKS cluster
+  BaseNetworkStackName:
+    Type: String
+    Description: Name of the base network stack
+  
+
+Resources:
+
+  # EKS Security Group - Control Plane Security Group
+  ControlPlaneSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group for EKS Control Plane
+      VpcId: 
+        Fn::ImportValue: !Sub ${BaseNetworkStackName}-VpcId
+      Tags:
+        - Key: Name
+          Value: !Sub ${ClusterName}-controlplane-sg
+
+  # Security group for EC2 instances
+  NodeSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for all nodes in the cluster
+      VpcId:
+        Fn::ImportValue: !Sub ${BaseNetworkStackName}-VpcId
+      Tags:
+        - Key: Name
+          Value: !Sub ${ClusterName}-node-sg
+
+  # Allow node to communicate with each other
+  NodeSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Allow node to communicate with each other
+      GroupId: !Ref NodeSecurityGroup
+      SourceSecurityGroupId: !Ref NodeSecurityGroup
+      IpProtocol: '-1'
+      FromPort: '-1'
+      ToPort: '-1'
+
+  # Allow Cluster Control Plane to communicate with Worker Kubelet and Pods
+  NodeSecurityGroupFromControlPlaneIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Allow worker Kubelets and pods to receive communication from the cluster control plane
+      GroupId: !Ref NodeSecurityGroup
+      SourceSecurityGroupId: !Ref ControlPlaneSecurityGroup
+      IpProtocol: tcp
+      FromPort: 1025
+      ToPort: 65535
+  ControlPlaneEgressToNodeSecurityGroup:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      Description: Allow the cluster control plane to communicate with worker Kubelet and pods
+      GroupId: !Ref ControlPlaneSecurityGroup
+      DestinationSecurityGroupId: !Ref NodeSecurityGroup
+      IpProtocol: tcp
+      FromPort: 1025
+      ToPort: 65535
+
+  # Allow Cluster Control Plane to communicate with Pods running extension API servers on port 443 (1 direction from Control Plane to Node)
+  NodeSecurityGroupFromControlPlaneOn443Ingress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Allow pods running extension API servers on port 443 to receive communication from cluster control plane
+      GroupId: !Ref NodeSecurityGroup
+      SourceSecurityGroupId: !Ref ControlPlaneSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+  ControlPlaneEgressToNodeSecurityGroupOn443:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      Description: Allow the cluster control plane to communicate with pods running extension API servers on port 443
+      GroupId: !Ref ControlPlaneSecurityGroup
+      DestinationSecurityGroupId: !Ref NodeSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+
+  # Allow pods to communicate with the cluster API Server (from Node to Control Plane)
+  ClusterControlPlaneSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Allow pods to communicate with the cluster API Server
+      GroupId: !Ref ControlPlaneSecurityGroup
+      SourceSecurityGroupId: !Ref NodeSecurityGroup
+      IpProtocol: tcp
+      ToPort: 443
+      FromPort: 443
+
+  # Allow Bastion Host access to EKS NodeGroup for debugging
+  BastionHostSecurityGroupIngressToNodeGroup:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Allow Bastion Host access to EKS for debugging
+      GroupId: !Ref NodeSecurityGroup
+      SourceSecurityGroupId:
+        Fn::ImportValue: !Sub ${BaseNetworkStackName}-BastionHostSG
+      IpProtocol: tcp
+      ToPort: 22
+      FromPort: 22
+  BastionHostSecurityGroupIngressToControlPlane:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Allow Bastion Host access to EKS for debugging
+      GroupId: !Ref ControlPlaneSecurityGroup
+      SourceSecurityGroupId:
+        Fn::ImportValue: !Sub ${BaseNetworkStackName}-BastionHostSG
+      IpProtocol: tcp
+      ToPort: 22
+      FromPort: 22
+
+Outputs:
+
+  ControlPlaneSecurityGroup:
+    Description: EKS Security Group for the cluster control plane communication with worker nodes
+    Value: !Ref ControlPlaneSecurityGroup
+    Export:
+      Name: !Sub ${AWS::StackName}-ControlPlaneSecurityGroup
+
+  NodeSecurityGroup:
+    Description: EKS Security Group for the worker nodes
+    Value: !Ref NodeSecurityGroup
+    Export:
+      Name: !Sub ${AWS::StackName}-NodeSecurityGroup
