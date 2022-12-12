@@ -249,7 +249,7 @@ jobs:
           name: Deploy frontend & frontend service
           command: |
             cd frontend
-            kubeclt apply -f frontend.yaml
+            kubectl apply -f frontend.yaml
       - run:
           name: Deploy ingress
           command: |
