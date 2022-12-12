@@ -10,7 +10,8 @@ metadata:
     alb.ingress.kubernetes.io/target-type: instance
 spec:
   rules:
-    - http:
+    - host: crypto-digging.online
+      http:
         paths:
           - path: /
             pathType: Prefix
