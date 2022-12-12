@@ -299,6 +299,6 @@ workflows:
       - deploy-ingress-controller:
           requires: [config-eks]
       - deploy-frontend:
-          requires: [check-fe-dockerfile]
+          requires: [deploy-ingress-controller]
       # - deploy-backend
       # - smoke-test
