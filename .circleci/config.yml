@@ -140,7 +140,7 @@ jobs:
               --parameter-overrides file://parameters/eks_network_param.conf \
               --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
       - run:
-          name: Deploy EKS Cluster & Nodegroup
+          name: Deploy EKS Cluster
           command: |
             cd infrastructure
             aws cloudformation deploy \
@@ -148,6 +148,10 @@ jobs:
               --stack-name crypto-digging-eks-cluster \
               --parameter-overrides file://parameters/eks_cluster_param.conf \
               --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
+      - run:
+          name: Deploy Nodegroup
+          command: |
+            cd infrastructure
             aws cloudformation deploy \
               --template-file ./eks_nodegroup.yml \
               --stack-name crypto-digging-eks-nodegroup \
