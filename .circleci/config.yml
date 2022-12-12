@@ -31,7 +31,7 @@ commands:
       - run:
           name: Update kubeconfig #https://docs.aws.amazon.com/eks/latest/userguide/create-kubeconfig.html
           command: |
-            aws sts get-caller-identity
+            sudo aws sts get-caller-identity
             sudo aws eks update-kubeconfig --region ${AWS_DEFAULT_REGION} --name ${CLUSTER_NAME}
   create-env-fe:
     description: Create .env.local file for frontend
