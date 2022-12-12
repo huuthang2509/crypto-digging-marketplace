@@ -283,6 +283,7 @@ jobs:
 workflows:
   deploy:
     jobs:
+      - prevent-startup-run
       - check-fe-dockerfile
       # - check-be-dockerfile
       - build-push-fe-image:
