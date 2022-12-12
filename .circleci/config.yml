@@ -241,12 +241,12 @@ workflows:
           requires: [check-fe-dockerfile]
       # - build-push-be-image:
       #     requires: [check-be-dockerfile]
-      - deploy_infrastructure:
+      - deploy-infrastructure:
           requires: [build-push-fe-image]
           filters:
             branches:
               only: master
-      - config_eks:
+      - config-eks:
           requires: [deploy_infrastructure]
       - deploy-ingress-controller:
           requires: [config_eks]
