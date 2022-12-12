@@ -235,7 +235,7 @@ jobs:
             wget https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.5/v2_4_5_full.yaml
             sed -i.bak -e '480,488d' ./v2_4_5_full.yaml
             sed -i.bak -e 's|your-cluster-name|'$CLUSTER_NAME'|' ./v2_4_5_full.yaml
-            sleep 15
+            sleep 55
             kubectl apply -f v2_4_5_full.yaml
             wget https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.5/v2_4_5_ingclass.yaml
             kubectl apply -f v2_4_5_ingclass.yaml
@@ -283,22 +283,25 @@ jobs:
 workflows:
   deploy:
     jobs:
-      - check-fe-dockerfile
+      - check-fe-dockerfile:
+          filters:
+            branches:
+              only: feature-dev
       # - check-be-dockerfile
       - build-push-fe-image:
           requires: [check-fe-dockerfile]
-      # - build-push-be-image:
-      #     requires: [check-be-dockerfile]
-      - deploy-infrastructure:
-          requires: [build-push-fe-image]
-          filters:
-            branches:
-              only: master
-      - config-eks:
-          requires: [deploy-infrastructure]
-      - deploy-ingress-controller:
-          requires: [config-eks]
+      # # - build-push-be-image:
+      # #     requires: [check-be-dockerfile]
+      # - deploy-infrastructure:
+      #     requires: [build-push-fe-image]
+      #     filters:
+      #       branches:
+      #         only: master
+      # - config-eks:
+      #     requires: [deploy-infrastructure]
+      # - deploy-ingress-controller:
+      #     requires: [config-eks]
       - deploy-frontend:
-          requires: [deploy-ingress-controller]
+          requires: [build-push-fe-image]
       # - deploy-backend
       # - smoke-test

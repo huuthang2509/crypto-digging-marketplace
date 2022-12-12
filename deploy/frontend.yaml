@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: crypto-digging-frontend
-        image: huuthang2509/crypto-digging-fe:testupdate
+        image: huuthang2509/crypto-digging-fe:latest
         ports:
         - containerPort: 3000
   replicas: 2
