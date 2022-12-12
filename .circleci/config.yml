@@ -40,7 +40,7 @@ commands:
           name: Create environment variables for frontend
           command: |
             cd frontend
-            cat > .env.local <<EOF
+            cat > .env.local \<<EOF
             NEXT_PUBLIC_BASE_URL=http://ecsdemo-crystal.default.svc.cluster.local/crystal
             NEXT_PUBLIC_FEE=0.01
             NEXT_PUBLIC_POOL_WALLET_ADDRESS=DKwnUmXPPTf8Yfv2CvQMNWdXGKiKgrnrQ75gwGdJyHKb
