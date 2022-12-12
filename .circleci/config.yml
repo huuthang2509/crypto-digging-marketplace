@@ -235,6 +235,7 @@ jobs:
             wget https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.5/v2_4_5_full.yaml
             sed -i.bak -e '480,488d' ./v2_4_5_full.yaml
             sed -i.bak -e 's|your-cluster-name|'$CLUSTER_NAME'|' ./v2_4_5_full.yaml
+            sleep 15
             kubectl apply -f v2_4_5_full.yaml
             wget https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.5/v2_4_5_ingclass.yaml
             kubectl apply -f v2_4_5_ingclass.yaml
