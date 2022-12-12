@@ -202,10 +202,10 @@ jobs:
   deploy-ingress-controller:
     executor: docker-aws
     steps:
+      - checkout
       - install-kubectl
       - install-eksctl
       - update-kubeconfig
-      - checkout
       - run:
           name: Deploy ingress-controller
           command: |
