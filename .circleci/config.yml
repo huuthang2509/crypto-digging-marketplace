@@ -13,6 +13,9 @@ executors:
   docker-aws-cli:
     docker:
       - image: amazon/aws-cli
+  docker-kubectl:
+    docker:
+      - image: bitnami/kubectl
   docker-base:
     docker:
       - image: cimg/base:2022.11-20.04
@@ -21,10 +24,61 @@ executors:
           password: $DOCKERHUB_ACCESS_TOKEN
 
 commands:
-  destroy-infra:
+  # destroy-infra:
+  update-kubeconfig:
+    description: Update kubeconfig to connect local kubectl with EKS cluster
+    steps:
+      - run:
+          name: Update kubeconfig #https://docs.aws.amazon.com/eks/latest/userguide/create-kubeconfig.html
+          command: |
+            aws sts get-caller-identity
+            aws eks update-kubeconfig --region ${AWS_DEFAULT_REGION} --name ${CLUSTER_NAME}
+  create-env-fe:
+    description: Create .env.local file for frontend
+    steps:
+      - run:
+          name: Create environment variables for frontend
+          command: |
+            cd frontend
+            cat <<EOF > .env.local
+            NEXT_PUBLIC_BASE_URL=http://ecsdemo-crystal.default.svc.cluster.local/crystal
+            NEXT_PUBLIC_FEE=0.01
+            NEXT_PUBLIC_POOL_WALLET_ADDRESS=DKwnUmXPPTf8Yfv2CvQMNWdXGKiKgrnrQ75gwGdJyHKb
+            NEXT_PUBLIC_IMAGE_STORAGE=https://storage.googleapis.com/crypto-digging-dev.appspot.com
+            NEXT_PUBLIC_ACCESS_TOKEN=ACCESS_TOKEN
+            NEXT_PUBLIC_REFRESH_TOKEN=REFRESH_TOKEN
+            NEXT_PUBLIC_JWT_KEY=complexsecrethere
+
+            NEXT_PUBLIC_CGD_TOKEN=7ctmggF48CzBq6L6JvmcM5KrjfRm4zMir1ycVoFfkd31
+            NEXT_PUBLIC_SOL_PRIVATE_KEYPAIR=181,115,63,47,201,158,235,219,147,56,95,15,179,70,217,69,246,189,131,205,239,163,79,113,112,100,26,15,28,76,210,53,219,183,8,164,232,38,184,237,66,241,37,123,125,7,204,54,155,0,90,170,153,239,77,79,74,31,24,162,171,220,196,196
+            EOF
     
 
 jobs:
+
+  check-fe-dockerfile:
+    executor: docker-base
+    steps:
+      - checkout
+      - run:
+          name: Use Hadolint to check Dockerfile
+          command: |
+            cd frontend
+            wget -O ./hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
+              chmod +x ./hadolint
+            ./hadolint Dockerfile
+
+  check-be-dockerfile:
+    executor: docker-base
+    steps:
+      - checkout
+      - run:
+          name: Use Hadolint to check Dockerfile
+          command: |
+            cd backend
+            wget -O ./hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
+              chmod +x ./hadolint
+            ./hadolint Dockerfile
 
   build-push-fe-image:
     executor: docker-base
@@ -32,17 +86,18 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
+      - create-env-fe
       - run:
           name: Build frontend image
           command: |
             cd frontend
             TAG=${CIRCLECI_WORKFLOW_ID:0:3}
-            docker build . -f Dockerfile -t=huuthang2509/cryto-digging-fe:$TAG
+            docker build . -f Dockerfile -t=huuthang2509/crypto-digging-fe:latest
       - run:
           name: Push to Docker Hub
           command: |
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN
-            docker push huuthang2509/cryto-digging-fe:$TAG
+            docker push huuthang2509/crypto-digging-fe:latest
 
   build-push-be-image:
     executor: docker-base
@@ -55,59 +110,137 @@ jobs:
           command: |
             cd backend
             TAG=${CIRCLECI_WORKFLOW_ID:0:3}
-            docker build . -f Dockerfile -t=huuthang2509/cryto-digging-be:$TAG
+            docker build . -f Dockerfile -t=huuthang2509/crypto-digging-be:$TAG
       - run:
           name: Push to Docker Hub
           command: |
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN
-            docker push huuthang2509/cryto-digging-be:$TAG
+            docker push huuthang2509/crypto-digging-be:$TAG
 
   deploy-infrastructure:
     executor: docker-aws-cli
     steps:
       - checkout
       - run:
-          name: Deploy VPC infrastructure
+          name: Deploy VPC & Network infrastructure
           command: |
             cd infrastructure
             aws cloudformation deploy \
               --template-file ./network/base_network.yml \
-              --stack-name cryto-digging-network \
+              --stack-name crypto-digging-network \
               --parameter-overrides file://parameters/base_network_param.conf \
               --capabilities CAPABILITY_IAM
       - run:
-          name: Deploy EKS infrastructure
+          name: Deploy EKS Network
           command: |
             cd infrastructure
             aws cloudformation deploy \
               --template-file ./network/eks_network.yml \
-              --stack-name cryto-digging-eks-network \
+              --stack-name crypto-digging-eks-network \
               --parameter-overrides file://parameters/eks_network_param.conf \
               --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
-            aws cloudformation wait stack-create-complete --stack-name "cryto-digging-eks-network"
+      - run:
+          name: Deploy EKS Cluster & Nodegroup
+          command: |
+            cd infrastructure
             aws cloudformation deploy \
               --template-file ./eks_cluster.yml \
-              --stack-name cryto-digging-eks-cluster \
+              --stack-name crypto-digging-eks-cluster \
               --parameter-overrides file://parameters/eks_cluster_param.conf \
               --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
-            aws cloudformation wait stack-create-complete --stack-name "cryto-digging-eks-cluster"
-            scp -i bastion-host.pem cryto-digging-nodegroup.pem ubuntu@54.84.69.43:/home/ubuntu/
+            aws cloudformation wait stack-create-complete --stack-name "crypto-digging-eks-cluster"
             aws cloudformation deploy \
               --template-file ./eks_nodegroup.yml \
-              --stack-name cryto-digging-eks-nodegroup \
+              --stack-name crypto-digging-eks-nodegroup \
               --parameter-overrides file://parameters/eks_nodegroup_param.conf \
               --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
 
-  configure_infrastructure:
-    executor: docker-python
+  config-eks:
+    executor: docker-kubectl
+    steps:
+      - update-kubeconfig
+      - run:
+          name: Enable nodes to join your cluster #https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html \
+                                                  # edit aws-auth configmap to allow nodes to join cluster
+          command: |
+            curl -o aws-auth-cm.yaml https://s3.us-west-2.amazonaws.com/amazon-eks/cloudformation/2020-10-29/aws-auth-cm.yaml
+            export NODE_INSTANCE_ROLE=aws cloudformation describe-stacks \
+                                        --stack-name "crypto-digging-eks-nodegroup" \
+                                        --query "Stacks[0].Outputs[?OutputKey=='NodeInstanceRole'].OutputValue"
+            echo $NODE_INSTANCE_ROLE
+            sed -i.bak -e 's|<ARN of instance role (not instance profile)>|${NODE_INSTANCE_ROLE}|' aws-auth-cm.yaml
+            kubectl apply -f aws-auth-cm.yaml
+  
+  deploy-ingress-controller:
+    executor: docker-kubectl
+    steps:
+      - run:
+          name: Install eksctl
+          command: |
+            eksctl version
+            curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+            sudo mv /tmp/eksctl /usr/local/bin
+            eksctl version
+      - update-kubeconfig
+      - run:
+          name: Deploy ingress-controller
+          command: |
+            cd infrastructure
+            eksctl utils associate-iam-oidc-provider \
+              --region ${AWS_DEFAULT_REGION} \
+              --cluster ${CLUSTER_NAME} \
+              --approve
+
+            curl -o iam-policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.5/docs/install/iam_policy.json
+            
+            aws iam create-policy \
+              --policy-name AWSLoadBalancerControllerIAMPolicy \
+              --policy-document file://iam-policy.json
+
+            eksctl create iamserviceaccount \
+              --cluster=${CLUSTER_NAME} \
+              --namespace=kube-system \
+              --name=aws-load-balancer-controller \
+              --role-name "AmazonEKSLoadBalancerControllerRole" \
+              --attach-policy-arn=arn:aws:iam::${AWS_ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy \
+              --override-existing-serviceaccounts \
+              --region ${AWS_DEFAULT_REGION} \
+              --approve
+
+            kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
+            wget https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.5/v2_4_5_full.yaml
+            sed -i.bak -e '480,488d' ./v2_4_5_full.yaml
+            sed -i.bak -e 's|your-cluster-name|${CLUSTER_NAME}|' ./v2_4_5_full.yaml
+            kubectl apply -f v2_4_5_full.yaml
+            wget https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.5/v2_4_5_ingclass.yaml
+            kubectl apply -f v2_4_5_ingclass.yaml
+
+  deploy-frontend:
+    executor: docker-kubectl
     steps:
       - checkout
       - run:
-          name: Configure infrastructure
+          name: Deploy frontend & frontend service
           command: |
-            pip install ansible
-  
-  backup_db:
+            cd frontend
+            kubeclt apply -f frontend.yaml
+      - run:
+          name: Deploy ingress
+          command: |
+            cd frontend
+            kubectl apply -f ingress.yaml
+
+  deploy-backend:
+    executor: docker-kubectl
+    steps:
+      - checkout
+      - run:
+          name: Deploy backend & backend service
+          command: |
+            cd backend
+            kubeclt apply -f backend.yaml
+
+  backup-db:
     executor: docker-python
     steps:
       - checkout
@@ -117,29 +250,30 @@ jobs:
             cd infrastructure
             python3 backup_db.py
 
-  deploy_frontend:
-
-  deploy_backend:
-
-  smoke_test: #health check?
+  # smoke-test: #health check?
 
 workflows:
   deploy:
     jobs:
-      - build_frontend
-      - build_backend
-      - test_frontend:
-          requires: [build_frontend]
-      - test_backend:
-          requires: [build_backend]
-      - deploy_infrastructure:
-          requires: [test_frontend, test_backend]
+      - check-fe-dockerfile:
           filters:
             branches:
               only: master
-      - configure_infrastructure:
-          requires: [deploy_infrastructure]
-      - backup_db
-      - deploy_frontend
-      - deploy_backend
-      - smoke_test
+      # - check-be-dockerfile
+      - build-push-fe-image:
+          requires: [check-fe-dockerfile]
+      # - build-push-be-image:
+      #     requires: [check-be-dockerfile]
+      - deploy-infrastructure:
+          requires: [build-push-fe-image]
+          filters:
+            branches:
+              only: master
+      - config-eks:
+          requires: [deploy-infrastructure]
+      - deploy-ingress-controller:
+          requires: [config-eks]
+      - deploy-frontend:
+          requires: [deploy-ingress-controller]
+      # - deploy-backend
+      # - smoke-test
