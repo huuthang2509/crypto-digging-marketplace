@@ -40,7 +40,7 @@ commands:
           name: Create environment variables for frontend
           command: |
             cd frontend
-            cat <<EOF > .env.local
+            cat > .env.local <<EOF
             NEXT_PUBLIC_BASE_URL=http://ecsdemo-crystal.default.svc.cluster.local/crystal
             NEXT_PUBLIC_FEE=0.01
             NEXT_PUBLIC_POOL_WALLET_ADDRESS=DKwnUmXPPTf8Yfv2CvQMNWdXGKiKgrnrQ75gwGdJyHKb
@@ -51,7 +51,7 @@ commands:
 
             NEXT_PUBLIC_CGD_TOKEN=7ctmggF48CzBq6L6JvmcM5KrjfRm4zMir1ycVoFfkd31
             NEXT_PUBLIC_SOL_PRIVATE_KEYPAIR=181,115,63,47,201,158,235,219,147,56,95,15,179,70,217,69,246,189,131,205,239,163,79,113,112,100,26,15,28,76,210,53,219,183,8,164,232,38,184,237,66,241,37,123,125,7,204,54,155,0,90,170,153,239,77,79,74,31,24,162,171,220,196,196
-            EOF
+            EOF\<<
     
 
 jobs:
