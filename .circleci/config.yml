@@ -194,7 +194,7 @@ jobs:
                                           --stack-name "crypto-digging-eks-nodegroup" \
                                           --query "Stacks[0].Outputs[?OutputKey=='NodeInstanceRole'].OutputValue" | grep -oP '(?<=").*?(?=")')
             echo $NODE_INSTANCE_ROLE
-            sed -i.bak -e 's|<ARN of instance role (not instance profile)>|$NODE_INSTANCE_ROLE|' aws-auth-cm.yaml
+            sed -i.bak -e 's|<ARN of instance role (not instance profile)>|$($NODE_INSTANCE_ROLE)|' aws-auth-cm.yaml
             cat aws-auth-cm.yaml
             kubectl apply -f aws-auth-cm.yaml
   
@@ -232,7 +232,7 @@ jobs:
             kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
             wget https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.5/v2_4_5_full.yaml
             sed -i.bak -e '480,488d' ./v2_4_5_full.yaml
-            sed -i.bak -e 's|your-cluster-name|${CLUSTER_NAME}|' ./v2_4_5_full.yaml
+            sed -i.bak -e 's|your-cluster-name|$($CLUSTER_NAME)|' ./v2_4_5_full.yaml
             kubectl apply -f v2_4_5_full.yaml
             wget https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.5/v2_4_5_ingclass.yaml
             kubectl apply -f v2_4_5_ingclass.yaml
