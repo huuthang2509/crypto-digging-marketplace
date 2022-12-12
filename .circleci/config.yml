@@ -195,7 +195,7 @@ jobs:
             wget https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.5/v2_4_5_ingclass.yaml
             kubectl apply -f v2_4_5_ingclass.yaml
 
-  deploy_frontend:
+  deploy-frontend:
     executor: docker-kubectl
     steps:
       - checkout
@@ -210,7 +210,7 @@ jobs:
             cd frontend
             kubectl apply -f ingress.yaml
 
-  deploy_backend:
+  deploy-backend:
     executor: docker-kubectl
     steps:
       - checkout
@@ -220,7 +220,7 @@ jobs:
             cd backend
             kubeclt apply -f backend.yaml
 
-  backup_db:
+  backup-db:
     executor: docker-python
     steps:
       - checkout
@@ -230,7 +230,7 @@ jobs:
             cd infrastructure
             python3 backup_db.py
 
-  # smoke_test: #health check?
+  # smoke-test: #health check?
 
 workflows:
   deploy:
@@ -247,9 +247,9 @@ workflows:
             branches:
               only: master
       - config-eks:
-          requires: [deploy_infrastructure]
+          requires: [deploy-infrastructure]
       - deploy-ingress-controller:
-          requires: [config_eks]
-      - deploy_frontend
-      # - deploy_backend
-      # - smoke_test
+          requires: [config-eks]
+      - deploy-frontend
+      # - deploy-backend
+      # - smoke-test
