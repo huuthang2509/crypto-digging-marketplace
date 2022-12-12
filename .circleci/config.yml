@@ -283,7 +283,6 @@ jobs:
 workflows:
   deploy:
     jobs:
-      - prevent-startup-run
       - check-fe-dockerfile
       # - check-be-dockerfile
       - build-push-fe-image:
@@ -299,6 +298,7 @@ workflows:
           requires: [deploy-infrastructure]
       - deploy-ingress-controller:
           requires: [config-eks]
-      - deploy-frontend
+      - deploy-frontend:
+          requires: [check-fe-dockerfile]
       # - deploy-backend
       # - smoke-test
