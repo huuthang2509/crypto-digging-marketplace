@@ -249,12 +249,12 @@ jobs:
       - run:
           name: Deploy frontend & frontend service
           command: |
-            cd frontend
+            cd deploy
             kubectl apply -f frontend.yaml
       - run:
           name: Deploy ingress
           command: |
-            cd frontend
+            cd deploy
             kubectl apply -f ingress.yaml
 
   deploy-backend:
@@ -297,10 +297,9 @@ workflows:
       #     filters:
       #       branches:
       #         only: master
-      - config-eks
-      - deploy-ingress-controller:
-          requires: [config-eks]
-      - deploy-frontend:
-          requires: [deploy-ingress-controller]
+      # - config-eks
+      # - deploy-ingress-controller:
+      #     requires: [config-eks]
+      - deploy-frontend
       # - deploy-backend
       # - smoke-test
