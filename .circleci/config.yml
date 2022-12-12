@@ -151,6 +151,7 @@ jobs:
               --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
       - run:
           name: Deploy Nodegroup
+          no_output_timeout: 15m
           command: |
             cd infrastructure
             aws cloudformation deploy \
