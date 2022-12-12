@@ -245,6 +245,7 @@ jobs:
     steps:
       - checkout
       - install-kubectl
+      - update-kubeconfig
       - run:
           name: Deploy frontend & frontend service
           command: |
