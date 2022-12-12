@@ -59,6 +59,8 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${ProjectName}-public-subnet-1
+        - Key: kubernetes.io/role/elb
+          Value: 1
 
   PublicSubnet2:
     Type: AWS::EC2::Subnet
@@ -70,6 +72,8 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${ProjectName}-public-subnet-2
+        - Key: kubernetes.io/role/elb
+          Value: 1
 
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
@@ -80,6 +84,8 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${ProjectName}-private-subnet-1
+        - Key: kubernetes.io/role/internal-elb
+          Value: 1
 
   PrivateSubnet2:
     Type: AWS::EC2::Subnet
@@ -90,6 +96,8 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${ProjectName}-private-subnet-2
+        - Key: kubernetes.io/role/internal-elb
+          Value: 1
 
   # Nat Gateway
   NatEIP1:
