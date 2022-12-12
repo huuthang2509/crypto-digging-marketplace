@@ -33,6 +33,25 @@ commands:
           command: |
             aws sts get-caller-identity
             aws eks update-kubeconfig --region ${AWS_DEFAULT_REGION} --name ${CLUSTER_NAME}
+  create-env-fe:
+    description: Create .env.local file for frontend
+    steps:
+      - run:
+          name: Create environment variables for frontend
+          command: |
+            cd frontend
+            cat <<EOF > .env.local
+            NEXT_PUBLIC_BASE_URL=http://ecsdemo-crystal.default.svc.cluster.local/crystal
+            NEXT_PUBLIC_FEE=0.01
+            NEXT_PUBLIC_POOL_WALLET_ADDRESS=DKwnUmXPPTf8Yfv2CvQMNWdXGKiKgrnrQ75gwGdJyHKb
+            NEXT_PUBLIC_IMAGE_STORAGE=https://storage.googleapis.com/crypto-digging-dev.appspot.com
+            NEXT_PUBLIC_ACCESS_TOKEN=ACCESS_TOKEN
+            NEXT_PUBLIC_REFRESH_TOKEN=REFRESH_TOKEN
+            NEXT_PUBLIC_JWT_KEY=complexsecrethere
+
+            NEXT_PUBLIC_CGD_TOKEN=7ctmggF48CzBq6L6JvmcM5KrjfRm4zMir1ycVoFfkd31
+            NEXT_PUBLIC_SOL_PRIVATE_KEYPAIR=181,115,63,47,201,158,235,219,147,56,95,15,179,70,217,69,246,189,131,205,239,163,79,113,112,100,26,15,28,76,210,53,219,183,8,164,232,38,184,237,66,241,37,123,125,7,204,54,155,0,90,170,153,239,77,79,74,31,24,162,171,220,196,196
+            EOF
     
 
 jobs:
@@ -67,6 +86,7 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
+      - create-env-fe
       - run:
           name: Build frontend image
           command: |
@@ -235,7 +255,10 @@ jobs:
 workflows:
   deploy:
     jobs:
-      - check-fe-dockerfile
+      - check-fe-dockerfile:
+          filters:
+            branches:
+              only: master
       # - check-be-dockerfile
       - build-push-fe-image:
           requires: [check-fe-dockerfile]
@@ -250,6 +273,7 @@ workflows:
           requires: [deploy-infrastructure]
       - deploy-ingress-controller:
           requires: [config-eks]
-      - deploy-frontend
+      - deploy-frontend:
+          requires: [deploy-ingress-controller]
       # - deploy-backend
       # - smoke-test
