@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crypto-digging-backend
+  labels:
+    app: crypto-digging
+    type: backend
+spec:
+  template:
+    metadata:
+      name: crypto-digging-backend
+      labels:
+        app: crypto-digging
+        type: backend
+    spec:
+      containers:
+      - name: crypto-digging-backend
+        image: huuthang2509/crypto-digging-be:latest
+        ports:
+        - containerPort: 9000
+  replicas: 2
+  selector:
+    matchLabels:
+      app: crypto-digging
+      type: backend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name:  crypto-digging-be-svc
+spec:
+  selector:
+    app:  crypto-digging
+    type:  backend
+  type: ClusterIP
+  ports: 
+    - port: 80
+      targetPort: 9000
