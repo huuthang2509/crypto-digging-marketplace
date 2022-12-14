@@ -1,15 +1,15 @@
 # Install dependencies
 FROM node:16.13.0-alpine3.14 AS deps
-WORKDIR /app
 
-COPY package.json package-lock.json ./
+WORKDIR /app
+COPY package*.json ./
 RUN npm ci
 
 # Build source code
 FROM node:16.13.0-alpine3.14 AS builder
-WORKDIR /app
 
-COPY package.json package-lock.json ./
+WORKDIR /app
+COPY package*.json ./
 COPY next.config.js tsconfig.json ./
 COPY .env.local ./
 COPY public ./public
@@ -30,7 +30,7 @@ WORKDIR /app
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-COPY --from=builder app/package.json app/package-lock.json ./
+COPY --from=builder app/package*.json ./
 COPY --from=builder app/public ./public
 
 COPY --from=builder app/node_modules ./node_modules
