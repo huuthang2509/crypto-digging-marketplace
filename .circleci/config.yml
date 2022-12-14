@@ -283,6 +283,7 @@ jobs:
 workflows:
   deploy:
     jobs:
+      - prevent-auto-build
       - check-fe-dockerfile:
           filters:
             branches:
