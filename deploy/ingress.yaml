@@ -8,9 +8,12 @@ metadata:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: instance
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:354317781339:certificate/54ab8b72-fd0a-41da-97df-7885aff9ec63
 spec:
   rules:
-    - host: crypto-digging.online
+    - host: www.crypto-digging.online
       http:
         paths:
           - path: /
