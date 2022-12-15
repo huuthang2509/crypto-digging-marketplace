@@ -16,7 +16,7 @@ export const verifySignatureAction = async (
       status: StatusCode.Active,
       expiredAt: {
         [Op.gte]: moment(),
-      },
+      } as any,
     },
   });
 
