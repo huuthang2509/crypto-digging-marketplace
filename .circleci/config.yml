@@ -299,6 +299,6 @@ workflows:
       - deploy-ingress-controller:
           requires: [config-eks]
       - deploy-frontend:
-          requires: [build-push-fe-image]
+          requires: [deploy-ingress-controller]
       # - deploy-backend
       # - smoke-test
