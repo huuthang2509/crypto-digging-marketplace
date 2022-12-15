@@ -283,22 +283,21 @@ jobs:
 workflows:
   deploy:
     jobs:
-      - check-fe-dockerfile
-      # - check-be-dockerfile
-      - build-push-fe-image:
-          requires: [check-fe-dockerfile]
-      # # - build-push-be-image:
-      # #     requires: [check-be-dockerfile]
-      - deploy-infrastructure:
-          requires: [build-push-fe-image]
-          filters:
-            branches:
-              only: master
-      - config-eks:
-          requires: [deploy-infrastructure]
-      - deploy-ingress-controller:
-          requires: [config-eks]
-      - deploy-frontend:
-          requires: [deploy-ingress-controller]
+      # - check-fe-dockerfile
+      # # - check-be-dockerfile
+      # - build-push-fe-image:
+      #     requires: [check-fe-dockerfile]
+      # # # - build-push-be-image:
+      # # #     requires: [check-be-dockerfile]
+      # - deploy-infrastructure:
+      #     requires: [build-push-fe-image]
+      #     filters:
+      #       branches:
+      #         only: master
+      # - config-eks:
+      #     requires: [deploy-infrastructure]
+      # - deploy-ingress-controller:
+      #     requires: [config-eks]
+      - deploy-frontend
       # - deploy-backend
       # - smoke-test
