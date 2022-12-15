@@ -49,7 +49,7 @@ export async function verifySignature(req: IRequest, res: Response) {
         status: StatusCode.Active,
         expiredAt: {
           [Op.gte]: moment(),
-        },
+        } as any,
       },
     });
 

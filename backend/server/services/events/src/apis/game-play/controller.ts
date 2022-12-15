@@ -76,7 +76,7 @@ export async function handleAppUpdateGamePlay(req: IRequest, res: Response) {
         status: StatusCode.Active,
         gameStatus: {
           [Op.ne]: GameStatus.Ended,
-        },
+        } as any,
       },
       transaction: trans,
     });
