@@ -1,7 +1,7 @@
 import moment from "moment-timezone";
 import { Heros, Marketplace, MarketRefType, SaleStatus, StatusCode } from "shared";
 
-export async function serializeHeroResponse(data: Heros[]) {
+export async function serializeHeroResponse(data: Heros[]): Promise<any> {
   const onMarketItemIds = (
     await Marketplace.findAll({
       where: {
@@ -21,7 +21,7 @@ export async function serializeHeroResponse(data: Heros[]) {
 }
 
 const regainStaminaRate = 0.1;
-export function standardizeAppHero(data: Heros) {
+export function standardizeAppHero(data: Heros): any {
   return {
     ...data.get(),
     currentStamina: data.restTime

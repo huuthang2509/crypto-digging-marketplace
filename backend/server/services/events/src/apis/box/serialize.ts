@@ -1,6 +1,6 @@
 import { Boxes, Marketplace, MarketRefType, SaleStatus, StatusCode } from "shared";
 
-export async function serializeBoxResponse(data: Boxes[]) {
+export async function serializeBoxResponse(data: Boxes[]): Promise<any> {
   const onMarketItemIds = (
     await Marketplace.findAll({
       where: {
