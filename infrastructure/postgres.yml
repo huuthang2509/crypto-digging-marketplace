@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: --- 
+  This template deploys Postgres database.
+
+Parameters: 
+  BaseNetworkStackName:
+    Type: String
+    Description: Name of the network stack
+
+Resources: 
+
+  # Create security group for Postgres
+  PostgresSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for Postgres
+      VpcId: 
+        Fn::ImportValue: !Sub ${BaseNetworkStackName}-VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+  # Create subnet group for Postgres
+  PostgresSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnet group for Postgres
+      SubnetIds:
+        - Fn::ImportValue: !Sub ${BaseNetworkStackName}-PrivateSubnet1Id
+        - Fn::ImportValue: !Sub ${BaseNetworkStackName}-PrivateSubnet2Id
+  
+  # Create Postgres database
+  PostgresDatabase:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Delete # should use snapshot
+    UpdateReplacePolicy: Delete # should use snapshot
+    Properties:
+      Engine: postgres
+      EngineVersion: 14.1
+      DBInstanceIdentifier: dg-postgres
+      DBName: postgres
+      MasterUsername: postgres
+      MasterUserPassword: postgres
+      DBInstanceClass: db.t3.micro
+      StorageType: gp2
+      AllocatedStorage: 20      
+      VPCSecurityGroups:
+        - !Ref PostgresSecurityGroup
+      DBSubnetGroupName: !Ref PostgresSubnetGroup
+      Port: 5432
+      PubliclyAccessible: false
+      MultiAZ: false
+      AvailabilityZone: !Select [0, !GetAZs ""]
+      EnablePerformanceInsights: false
+      BackupRetentionPeriod: 7
+      DeletionProtection: false
+      StorageEncrypted: false
+      Tags:
+        - Key: Name
+          Value: Postgres
+
+Outputs:
+
+  PostgresArn:
+    Description: Postgres database ARN
+    Value: !GetAtt PostgresDatabase.DBInstanceArn
+
+  PostgresEndpoint:
+    Description: Postgres database endpoint
+    Value: !GetAtt PostgresDatabase.Endpoint.Address
