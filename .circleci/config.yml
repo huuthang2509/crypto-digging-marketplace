@@ -291,7 +291,7 @@ jobs:
           name: Deploy backend & backend service
           command: |
             cd backend
-            kubeclt apply -f backend/events.yaml
+            kubectl apply -f backend/events.yaml
 
   backup-db:
     executor: docker-python
