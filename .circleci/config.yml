@@ -178,6 +178,7 @@ jobs:
   deploy-eks:
     executor: docker-aws-cli
     steps:
+      - checkout
       - run:
           name: Deploy EKS Cluster
           no_output_timeout: 15m
@@ -326,7 +327,6 @@ workflows:
       - build-push-be-image:
           requires: [check-be-dockerfile]
       - deploy-network:
-          requires: [build-push-fe-image, build-push-be-image]
           filters:
             branches:
               only: master
@@ -345,12 +345,12 @@ workflows:
       - deploy-ingress-controller:
           requires: [config-eks]
       - deploy-frontend:
-          requires: [build-push-fe-image]
+          requires: [build-push-fe-image, deploy-ingress-controller]
           filters:
             branches:
               only: [master, feature/*]
       - deploy-backend:
-          requires: [build-push-be-image]
+          requires: [build-push-be-image, deploy-ingress-controller]
           filters:
             branches:
               only: [master, feature/*]
