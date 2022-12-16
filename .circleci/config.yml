@@ -138,6 +138,20 @@ jobs:
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN
             docker push huuthang2509/crypto-digging-be:latest
 
+  deploy-db:
+    executor: docker-aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Deploy Postgres Database
+          command: |
+            cd infrastructure
+            aws cloudformation deploy \
+              --template-file ./postgres.yml \
+              --stack-name crypto-digging-postgres \
+              --parameter-overrides file://parameters/postgres_param.conf \
+              --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
+
   deploy-infrastructure:
     executor: docker-aws-cli
     steps:
@@ -159,15 +173,6 @@ jobs:
               --template-file ./network/eks_network.yml \
               --stack-name crypto-digging-eks-network \
               --parameter-overrides file://parameters/eks_network_param.conf \
-              --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
-      - run:
-          name: Deploy Postgres Database
-          command: |
-            cd infrastructure
-            aws cloudformation deploy \
-              --template-file ./postgres.yml \
-              --stack-name crypto-digging-postgres \
-              --parameter-overrides file://parameters/postgres_param.conf \
               --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
       - run:
           name: Deploy EKS Cluster
@@ -287,7 +292,14 @@ jobs:
             cd infrastructure
             python3 backup_db.py
 
-  # smoke-test: #health check?
+  smoke-test:
+    executor: docker-base
+    steps:
+      - run:
+          name: Smoke test
+          command: |
+            curl -s -o /dev/null -w "%{http_code}" https://www.crypto-digging.com
+            curl https://www.crypto-digging.com
 
 workflows:
   deploy:
@@ -304,6 +316,11 @@ workflows:
           requires: [check-fe-dockerfile]
       - build-push-be-image:
           requires: [check-be-dockerfile]
+      - deploy-db:
+          requires: [build-push-fe-image , build-push-be-image]
+          filters:
+            branches:
+              only: master
       - deploy-infrastructure:
           requires: [build-push-fe-image, build-push-be-image]
           filters:
