@@ -129,9 +129,9 @@ jobs:
       - run:
           name: Build backend image
           command: |
-            cd backend
+            cd backend/server
             TAG=${CIRCLECI_WORKFLOW_ID:0:3}
-            docker build . -f server/services/events/Dockerfile -t=huuthang2509/crypto-digging-be:latest
+            docker build . -f services/events/Dockerfile -t=huuthang2509/crypto-digging-be:latest
       - run:
           name: Push to Docker Hub
           command: |
