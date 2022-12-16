@@ -62,7 +62,7 @@ commands:
           command: |
             cd frontend
             cat > .env.local \<<EOF
-            NEXT_PUBLIC_BASE_URL=http://ecsdemo-crystal.default.svc.cluster.local/crystal
+            NEXT_PUBLIC_BASE_URL=http://crypto-digging-be-svc.default.svc.cluster.local/
             NEXT_PUBLIC_FEE=0.01
             NEXT_PUBLIC_POOL_WALLET_ADDRESS=DKwnUmXPPTf8Yfv2CvQMNWdXGKiKgrnrQ75gwGdJyHKb
             NEXT_PUBLIC_IMAGE_STORAGE=https://storage.googleapis.com/crypto-digging-dev.appspot.com
@@ -131,12 +131,26 @@ jobs:
           command: |
             cd backend
             TAG=${CIRCLECI_WORKFLOW_ID:0:3}
-            docker build . -f Dockerfile -t=huuthang2509/crypto-digging-be:$TAG
+            docker build . -f server/services/events/Dockerfile -t=huuthang2509/crypto-digging-be:latest
       - run:
           name: Push to Docker Hub
           command: |
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN
-            docker push huuthang2509/crypto-digging-be:$TAG
+            docker push huuthang2509/crypto-digging-be:latest
+
+  deploy-db:
+    executor: docker-aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Deploy Postgres Database
+          command: |
+            cd infrastructure
+            aws cloudformation deploy \
+              --template-file ./postgres.yml \
+              --stack-name crypto-digging-postgres \
+              --parameter-overrides file://parameters/postgres_param.conf \
+              --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
 
   deploy-infrastructure:
     executor: docker-aws-cli
@@ -250,7 +264,7 @@ jobs:
           name: Deploy frontend & frontend service
           command: |
             cd deploy
-            kubectl apply -f frontend.yaml
+            kubectl apply -f frontend/frontend.yaml
       - run:
           name: Deploy ingress
           command: |
@@ -263,10 +277,15 @@ jobs:
       - checkout
       - install-kubectl
       - run:
+          name: Deploy Configmap
+          command: |
+            cd deploy
+            kubectl create configmap events-be-config --from-file=configmap/events.be.properties
+      - run:
           name: Deploy backend & backend service
           command: |
             cd backend
-            kubeclt apply -f backend.yaml
+            kubeclt apply -f backend/events.yaml
 
   backup-db:
     executor: docker-python
@@ -278,26 +297,53 @@ jobs:
             cd infrastructure
             python3 backup_db.py
 
-  # smoke-test: #health check?
+  smoke-test:
+    executor: docker-base
+    steps:
+      - run:
+          name: Smoke test
+          command: |
+            curl -s -o /dev/null -w "%{http_code}" https://www.crypto-digging.com
+            curl https://www.crypto-digging.com
 
 workflows:
   deploy:
     jobs:
-      # - check-fe-dockerfile
-      # # - check-be-dockerfile
-      # - build-push-fe-image:
-      #     requires: [check-fe-dockerfile]
-      # # # - build-push-be-image:
-      # # #     requires: [check-be-dockerfile]
-      # - deploy-infrastructure:
-      #     requires: [build-push-fe-image]
-      #     filters:
-      #       branches:
-      #         only: master
-      # - config-eks:
-      #     requires: [deploy-infrastructure]
-      # - deploy-ingress-controller:
-      #     requires: [config-eks]
-      - deploy-frontend
-      # - deploy-backend
-      # - smoke-test
+      - check-fe-dockerfile:
+          filters:
+            branches:
+              only: [master, feature/*]
+      - check-be-dockerfile:
+          filters:
+            branches:
+              only: [master, feature/*]
+      - build-push-fe-image:
+          requires: [check-fe-dockerfile]
+      - build-push-be-image:
+          requires: [check-be-dockerfile]
+      - deploy-db:
+          requires: [build-push-fe-image , build-push-be-image]
+          filters:
+            branches:
+              only: master
+      - deploy-infrastructure:
+          requires: [build-push-fe-image, build-push-be-image]
+          filters:
+            branches:
+              only: master
+      - config-eks:
+          requires: [deploy-infrastructure]
+      - deploy-ingress-controller:
+          requires: [config-eks]
+      - deploy-frontend:
+          requires: [build-push-fe-image]
+          filters:
+            branches:
+              only: [master, feature/*]
+      - deploy-backend:
+          requires: [build-push-be-image]
+          filters:
+            branches:
+              only: [master, feature/*]
+      - smoke-test:
+          requires: [deploy-frontend, deploy-backend]
