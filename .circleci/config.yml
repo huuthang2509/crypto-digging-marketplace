@@ -62,7 +62,7 @@ commands:
           command: |
             cd frontend
             cat > .env.local \<<EOF
-            NEXT_PUBLIC_BASE_URL=http://ecsdemo-crystal.default.svc.cluster.local/crystal
+            NEXT_PUBLIC_BASE_URL=http://crypto-digging-be-svc.default.svc.cluster.local/
             NEXT_PUBLIC_FEE=0.01
             NEXT_PUBLIC_POOL_WALLET_ADDRESS=DKwnUmXPPTf8Yfv2CvQMNWdXGKiKgrnrQ75gwGdJyHKb
             NEXT_PUBLIC_IMAGE_STORAGE=https://storage.googleapis.com/crypto-digging-dev.appspot.com
@@ -276,6 +276,11 @@ jobs:
     steps:
       - checkout
       - install-kubectl
+      - run:
+          name: Deploy Configmap
+          command: |
+            cd deploy
+            kubectl create configmap events-be-config --from-file=configmap/events.be.properties
       - run:
           name: Deploy backend & backend service
           command: |
