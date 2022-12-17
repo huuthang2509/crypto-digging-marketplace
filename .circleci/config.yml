@@ -290,7 +290,7 @@ jobs:
       - run:
           name: Deploy backend & backend service
           command: |
-            cd backend
+            cd deploy
             kubectl apply -f backend/events.yaml
 
   backup-db:

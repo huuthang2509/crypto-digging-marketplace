@@ -23,7 +23,8 @@ spec:
                 name: crypto-digging-fe-svc
                 port:
                   number: 80
-    - http:
+    - host: www.crypto-digging.online.be
+      http:
         paths:
           - path: /
             pathType: Prefix
@@ -31,4 +32,4 @@ spec:
               service:
                 name: crypto-digging-be-svc
                 port:
-                  number: 9000
+                  number: 8080
