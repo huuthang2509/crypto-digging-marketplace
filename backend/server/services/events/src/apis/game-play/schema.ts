@@ -1,4 +1,4 @@
-import * as Joi from "joi";
+import { Joi } from "shared";
 import { GameStatus, HeroBoxesType, MarketRefType } from "shared";
 
 // App

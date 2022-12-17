@@ -1,4 +1,4 @@
-import * as Joi from "joi";
+import { Joi } from "shared";
 import { HeroStatus } from "shared";
 import { InventoryFilterState } from "../box/schema";
 
