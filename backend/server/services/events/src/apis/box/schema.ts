@@ -1,4 +1,4 @@
-import * as Joi from "joi";
+import { Joi } from "shared";
 import { ActionTypes, SignatureSchema } from "shared";
 
 export enum InventoryFilterState {

@@ -6,3 +6,4 @@ export * from "./resources";
 export * from "./schema";
 export * from "./services";
 export * from "./utils";
+export const Joi = require("joi");

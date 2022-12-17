@@ -1,4 +1,4 @@
-import * as Joi from "joi";
+import { Joi } from "shared";
 import { MarketRefType, UserLogAction } from "shared";
 
 export const FormGetUserHistory = {
