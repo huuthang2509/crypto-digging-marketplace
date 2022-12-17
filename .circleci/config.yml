@@ -281,6 +281,7 @@ jobs:
     steps:
       - checkout
       - install-kubectl
+      - update-kubeconfig
       - run:
           name: Deploy Configmap
           command: |
@@ -289,8 +290,8 @@ jobs:
       - run:
           name: Deploy backend & backend service
           command: |
-            cd backend
-            kubeclt apply -f backend/events.yaml
+            cd deploy
+            kubectl apply -f backend/events.yaml
 
   backup-db:
     executor: docker-python
@@ -314,45 +315,41 @@ jobs:
 workflows:
   deploy:
     jobs:
-      - check-fe-dockerfile:
-          filters:
-            branches:
-              only: [master, feature/*]
-      - check-be-dockerfile:
-          filters:
-            branches:
-              only: [master, feature/*]
-      - build-push-fe-image:
-          requires: [check-fe-dockerfile]
-      - build-push-be-image:
-          requires: [check-be-dockerfile]
-      - deploy-network:
-          filters:
-            branches:
-              only: master
-      - deploy-db:
-          requires: [deploy-network]
-          filters:
-            branches:
-              only: master
-      - deploy-eks:
-          requires: [deploy-network]
-          filters:
-            branches:
-              only: master
-      - config-eks:
-          requires: [deploy-eks]
-      - deploy-ingress-controller:
-          requires: [config-eks]
-      - deploy-frontend:
-          requires: [build-push-fe-image, deploy-ingress-controller]
-          filters:
-            branches:
-              only: [master, feature/*]
-      - deploy-backend:
-          requires: [build-push-be-image, deploy-ingress-controller]
-          filters:
-            branches:
-              only: [master, feature/*]
-      - smoke-test:
-          requires: [deploy-frontend, deploy-backend]
+      # - check-fe-dockerfile:
+      #     filters:
+      #       branches:
+      #         only: [master, feature/*]
+      # - check-be-dockerfile:
+      #     filters:
+      #       branches:
+      #         only: [master, feature/*]
+      # - build-push-fe-image:
+      #     requires: [check-fe-dockerfile]
+      # - build-push-be-image:
+      #     requires: [check-be-dockerfile]
+      # - deploy-network:
+      #     filters:
+      #       branches:
+      #         only: master
+      # - deploy-db:
+      #     requires: [deploy-network]
+      #     filters:
+      #       branches:
+      #         only: master
+      # - deploy-eks:
+      #     requires: [deploy-network]
+      #     filters:
+      #       branches:
+      #         only: master
+      # - config-eks:
+      #     requires: [deploy-eks]
+      # - deploy-ingress-controller:
+      #     requires: [config-eks]
+      # - deploy-frontend:
+      #     requires: [build-push-fe-image, deploy-ingress-controller]
+      #     filters:
+      #       branches:
+      #         only: [master, feature/*]
+      - deploy-backend
+      # - smoke-test:
+      #     requires: [deploy-frontend, deploy-backend]
