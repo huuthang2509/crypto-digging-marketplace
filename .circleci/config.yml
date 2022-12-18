@@ -318,42 +318,20 @@ workflows:
       - check-fe-dockerfile:
           filters:
             branches:
-              only: [master, feature/*]
+              only: [feature/*]
       - check-be-dockerfile:
           filters:
             branches:
-              only: [master, feature/*]
-      - build-push-fe-image:
-          requires: [check-fe-dockerfile]
-      - build-push-be-image:
-          requires: [check-be-dockerfile]
-      - deploy-network:
-          filters:
-            branches:
-              only: master
-      - deploy-db:
-          requires: [deploy-network]
-          filters:
-            branches:
-              only: master
-      - deploy-eks:
-          requires: [deploy-network]
-          filters:
-            branches:
-              only: master
-      - config-eks:
-          requires: [deploy-eks]
-      - deploy-ingress-controller:
-          requires: [config-eks]
+              only: [feature/*]
       - deploy-frontend:
-          requires: [build-push-fe-image, deploy-ingress-controller]
+          requires: [build-push-fe-image]
           filters:
             branches:
-              only: [master, feature/*]
+              only: [feature/*]
       - deploy-backend:
-          requires: [build-push-be-image, deploy-ingress-controller]
+          requires: [build-push-be-image]
           filters:
             branches:
-              only: [master, feature/*]
+              only: [feature/*]
       - smoke-test:
           requires: [deploy-frontend, deploy-backend]
