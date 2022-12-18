@@ -19,6 +19,8 @@ spec:
         envFrom:
         - configMapRef:
             name: events-be-config
+        - secretRef:
+            name: events-be-secret
         ports:
         - containerPort: 9000
   replicas: 2

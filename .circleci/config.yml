@@ -62,16 +62,16 @@ commands:
           command: |
             cd frontend
             cat > .env.local \<<EOF
-            NEXT_PUBLIC_BASE_URL=https://crypto-digging-marketplace.online/
-            NEXT_PUBLIC_FEE=0.01
-            NEXT_PUBLIC_POOL_WALLET_ADDRESS=FngAPJDTm33qrFLGnU1FhQ3XTq921HMpu7cTQ2M3DY67
-            NEXT_PUBLIC_IMAGE_STORAGE=https://storage.googleapis.com/crypto-digging-dev.appspot.com
-            NEXT_PUBLIC_ACCESS_TOKEN=ACCESS_TOKEN
-            NEXT_PUBLIC_REFRESH_TOKEN=REFRESH_TOKEN
-            NEXT_PUBLIC_JWT_KEY=complexsecrethere
+            NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
+            NEXT_PUBLIC_FEE=${NEXT_PUBLIC_FEE}
+            NEXT_PUBLIC_POOL_WALLET_ADDRESS=${NEXT_PUBLIC_POOL_WALLET_ADDRESS}
+            NEXT_PUBLIC_IMAGE_STORAGE=${NEXT_PUBLIC_IMAGE_STORAGE}
+            NEXT_PUBLIC_ACCESS_TOKEN=${NEXT_PUBLIC_ACCESS_TOKEN}
+            NEXT_PUBLIC_REFRESH_TOKEN=${NEXT_PUBLIC_REFRESH_TOKEN}
+            NEXT_PUBLIC_JWT_KEY=${NEXT_PUBLIC_JWT_KEY}
 
-            NEXT_PUBLIC_CGD_TOKEN=7ctmggF48CzBq6L6JvmcM5KrjfRm4zMir1ycVoFfkd31
-            NEXT_PUBLIC_SOL_PRIVATE_KEYPAIR=181,115,63,47,201,158,235,219,147,56,95,15,179,70,217,69,246,189,131,205,239,163,79,113,112,100,26,15,28,76,210,53,219,183,8,164,232,38,184,237,66,241,37,123,125,7,204,54,155,0,90,170,153,239,77,79,74,31,24,162,171,220,196,196
+            NEXT_PUBLIC_CGD_TOKEN=${NEXT_PUBLIC_CGD_TOKEN}
+            NEXT_PUBLIC_SOL_PRIVATE_KEYPAIR=${NEXT_PUBLIC_SOL_PRIVATE_KEYPAIR}
             EOF\<<
     
 
@@ -287,6 +287,22 @@ jobs:
           command: |
             cd deploy
             kubectl create configmap events-be-config --from-env-file=configmap/events.be.properties
+      - run:
+          name: Deploy Secrets
+          command: |
+            cd deploy
+            kubectl create secret generic events-be-secret \
+                --from-literal=ADDRESS=${ADDRESS} \
+                --from-literal=PRIVATE_KEY=${PRIVATE_KEY} \
+                --from-literal=POSTGRES_HOST=${POSTGRES_HOST} \
+                --from-literal=POSTGRES_PORT=${POSTGRES_PORT} \
+                --from-literal=POSTGRES_DB=${POSTGRES_DB} \
+                --from-literal=POSTGRES_USER=${POSTGRES_USER} \
+                --from-literal=POSTGRES_PASSWORD=${POSTGRES_PASSWORD} \
+                --from-literal=DATA_ADMIN_SECRET=${DATA_ADMIN_SECRET} \
+                --from-literal=HASURA_GRAPHQL_ADMIN_SECRET=${HASURA_GRAPHQL_ADMIN_SECRET} \
+                --from-literal=SOL_PRIVATE_KEYPAIR=${SOL_PRIVATE_KEYPAIR} \
+                --from-literal=JWT_SECRET=${JWT_SECRET} \
       - run:
           name: Deploy backend & backend service
           command: |
