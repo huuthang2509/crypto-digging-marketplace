@@ -309,16 +309,6 @@ jobs:
             cd deploy
             kubectl apply -f backend/events.yaml
 
-  backup-db:
-    executor: docker-python
-    steps:
-      - checkout
-      - run:
-          name: Backup database
-          command: |
-            cd infrastructure
-            python3 backup_db.py
-
   smoke-test:
     executor: docker-base
     steps:
