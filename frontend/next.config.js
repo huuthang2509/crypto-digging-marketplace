@@ -4,10 +4,7 @@ const nextConfig = {
   images: {
     domains: ['storage.googleapis.com'],
   },
+  output: "standalone",
 };
 
 module.exports = nextConfig;
-
-module.exports = { 
-  output: "standalone"
-}
