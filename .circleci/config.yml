@@ -286,7 +286,7 @@ jobs:
           name: Deploy Configmap
           command: |
             cd deploy
-            kubectl create configmap events-be-config --from-file=configmap/events.be.properties
+            kubectl create configmap events-be-config --from-env-file=configmap/events.be.properties
       - run:
           name: Deploy backend & backend service
           command: |
