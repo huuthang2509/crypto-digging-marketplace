@@ -62,7 +62,7 @@ commands:
           command: |
             cd frontend
             cat > .env.local \<<EOF
-            NEXT_PUBLIC_BASE_URL=http://crypto-digging-be-svc-internal.default.svc.cluster.local/
+            NEXT_PUBLIC_BASE_URL=https://crypto-digging-marketplace.online/
             NEXT_PUBLIC_FEE=0.01
             NEXT_PUBLIC_POOL_WALLET_ADDRESS=FngAPJDTm33qrFLGnU1FhQ3XTq921HMpu7cTQ2M3DY67
             NEXT_PUBLIC_IMAGE_STORAGE=https://storage.googleapis.com/crypto-digging-dev.appspot.com

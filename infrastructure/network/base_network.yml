@@ -211,7 +211,7 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId: !Ref NatGateway2
 
-  # Bastion Host for debugging
+  # Bastion Host for debugging & init db
   BastionHostSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -226,6 +226,10 @@ Resources:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
           CidrIp: 0.0.0.0/0
 
 Outputs:
