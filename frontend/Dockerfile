@@ -30,6 +30,7 @@ WORKDIR /app
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
+COPY next.config.js tsconfig.json ./
 COPY --from=builder app/package*.json ./
 COPY --from=builder app/public ./public
 
