@@ -318,11 +318,11 @@ workflows:
       - check-fe-dockerfile:
           filters:
             branches:
-              only: [feature*]
+              only: /feature*/
       - check-be-dockerfile:
           filters:
             branches:
-              only: [feature*]
+              only: /feature*/
       - build-push-fe-image:
           requires: [check-fe-dockerfile]
       - build-push-be-image:
@@ -331,11 +331,11 @@ workflows:
           requires: [build-push-fe-image]
           filters:
             branches:
-              only: [feature*]
+              only: /feature*/
       - deploy-backend:
           requires: [build-push-be-image]
           filters:
             branches:
-              only: [feature*]
+              only: /feature*/
       - smoke-test:
           requires: [deploy-frontend, deploy-backend]
