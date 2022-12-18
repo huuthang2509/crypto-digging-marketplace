@@ -10,7 +10,7 @@ metadata:
     alb.ingress.kubernetes.io/target-type: instance
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
     alb.ingress.kubernetes.io/ssl-redirect: '443'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:354317781339:certificate/54ab8b72-fd0a-41da-97df-7885aff9ec63
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:354317781339:certificate/54ab8b72-fd0a-41da-97df-7885aff9ec63,arn:aws:acm:us-east-1:354317781339:certificate/7f9d9c85-820b-4503-a94a-9a4aa8c73811
 spec:
   rules:
     - host: www.crypto-digging.online
@@ -23,7 +23,7 @@ spec:
                 name: crypto-digging-fe-svc
                 port:
                   number: 80
-    - host: www.crypto-digging.online.be
+    - host: crypto-digging-marketplace.online
       http:
         paths:
           - path: /
@@ -32,4 +32,4 @@ spec:
               service:
                 name: crypto-digging-be-svc
                 port:
-                  number: 8080
+                  number: 9000

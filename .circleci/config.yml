@@ -62,9 +62,9 @@ commands:
           command: |
             cd frontend
             cat > .env.local \<<EOF
-            NEXT_PUBLIC_BASE_URL=http://crypto-digging-be-svc.default.svc.cluster.local/
+            NEXT_PUBLIC_BASE_URL=http://crypto-digging-be-svc-internal.default.svc.cluster.local/
             NEXT_PUBLIC_FEE=0.01
-            NEXT_PUBLIC_POOL_WALLET_ADDRESS=DKwnUmXPPTf8Yfv2CvQMNWdXGKiKgrnrQ75gwGdJyHKb
+            NEXT_PUBLIC_POOL_WALLET_ADDRESS=FngAPJDTm33qrFLGnU1FhQ3XTq921HMpu7cTQ2M3DY67
             NEXT_PUBLIC_IMAGE_STORAGE=https://storage.googleapis.com/crypto-digging-dev.appspot.com
             NEXT_PUBLIC_ACCESS_TOKEN=ACCESS_TOKEN
             NEXT_PUBLIC_REFRESH_TOKEN=REFRESH_TOKEN
@@ -315,41 +315,45 @@ jobs:
 workflows:
   deploy:
     jobs:
-      # - check-fe-dockerfile:
-      #     filters:
-      #       branches:
-      #         only: [master, feature/*]
-      # - check-be-dockerfile:
-      #     filters:
-      #       branches:
-      #         only: [master, feature/*]
-      # - build-push-fe-image:
-      #     requires: [check-fe-dockerfile]
-      # - build-push-be-image:
-      #     requires: [check-be-dockerfile]
-      # - deploy-network:
-      #     filters:
-      #       branches:
-      #         only: master
-      # - deploy-db:
-      #     requires: [deploy-network]
-      #     filters:
-      #       branches:
-      #         only: master
-      # - deploy-eks:
-      #     requires: [deploy-network]
-      #     filters:
-      #       branches:
-      #         only: master
-      # - config-eks:
-      #     requires: [deploy-eks]
-      # - deploy-ingress-controller:
-      #     requires: [config-eks]
-      # - deploy-frontend:
-      #     requires: [build-push-fe-image, deploy-ingress-controller]
-      #     filters:
-      #       branches:
-      #         only: [master, feature/*]
-      - deploy-backend
-      # - smoke-test:
-      #     requires: [deploy-frontend, deploy-backend]
+      - check-fe-dockerfile:
+          filters:
+            branches:
+              only: [master, feature/*]
+      - check-be-dockerfile:
+          filters:
+            branches:
+              only: [master, feature/*]
+      - build-push-fe-image:
+          requires: [check-fe-dockerfile]
+      - build-push-be-image:
+          requires: [check-be-dockerfile]
+      - deploy-network:
+          filters:
+            branches:
+              only: master
+      - deploy-db:
+          requires: [deploy-network]
+          filters:
+            branches:
+              only: master
+      - deploy-eks:
+          requires: [deploy-network]
+          filters:
+            branches:
+              only: master
+      - config-eks:
+          requires: [deploy-eks]
+      - deploy-ingress-controller:
+          requires: [config-eks]
+      - deploy-frontend:
+          requires: [build-push-fe-image, deploy-ingress-controller]
+          filters:
+            branches:
+              only: [master, feature/*]
+      - deploy-backend:
+          requires: [build-push-be-image, deploy-ingress-controller]
+          filters:
+            branches:
+              only: [master, feature/*]
+      - smoke-test:
+          requires: [deploy-frontend, deploy-backend]
