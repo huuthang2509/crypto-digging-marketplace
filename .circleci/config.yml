@@ -323,6 +323,10 @@ workflows:
           filters:
             branches:
               only: [feature/*]
+      - build-push-fe-image:
+          requires: [check-fe-dockerfile]
+      - build-push-be-image:
+          requires: [check-be-dockerfile]
       - deploy-frontend:
           requires: [build-push-fe-image]
           filters:
